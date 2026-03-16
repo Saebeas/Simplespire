@@ -1,0 +1,39 @@
+[gd_scene format=3 uid="uid://dwpid3bycec2s"]
+
+[ext_resource type="Script" uid="uid://d3bywvf4syoir" path="res://entities/player.gd" id="1_merdl"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_b0kkn"]
+radius = 14.0
+height = 48.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_e4p34"]
+radius = 18.0
+
+[node name="Player" type="CharacterBody2D" unique_id=1657530040]
+collision_layer = 2
+script = ExtResource("1_merdl")
+
+[node name="Visual" type="ColorRect" parent="." unique_id=1178998654]
+offset_left = -16.0
+offset_top = -48.0
+offset_right = 16.0
+color = Color(0.9411765, 0.64705884, 0, 1)
+
+[node name="CollisionShape" type="CollisionShape2D" parent="." unique_id=56011282]
+position = Vector2(0, -24)
+shape = SubResource("CapsuleShape2D_b0kkn")
+
+[node name="StunDetector" type="Area2D" parent="." unique_id=1481773406]
+collision_layer = 0
+collision_mask = 8
+
+[node name="StunShape" type="CollisionShape2D" parent="StunDetector" unique_id=55786180]
+position = Vector2(0, -24)
+shape = SubResource("CircleShape2D_e4p34")
+
+[node name="LaserBeam" type="Line2D" parent="." unique_id=520137945]
+unique_name_in_owner = true
+visible = false
+points = PackedVector2Array(0, 0, 0, 0)
+width = 3.0
+default_color = Color(0.65882355, 0.33333334, 0.96862745, 1)

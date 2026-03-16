@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://b1qpjufb4832y"]
+
+[ext_resource type="Script" uid="uid://tswtlrdh2ir7" path="res://entities/player_base.gd" id="1_3rs7g"]
+
+[node name="PlayerBase" type="Node2D" unique_id=1360801921]
+script = ExtResource("1_3rs7g")
+
+[node name="Visual" type="ColorRect" parent="." unique_id=247563344]
+offset_left = -40.0
+offset_top = -120.0
+offset_right = 40.0
+color = Color(0.2901961, 0.43529412, 0.64705884, 1)
+
+[node name="NameLabel" type="Label" parent="." unique_id=898059694]
+offset_left = -12.0
+offset_top = -140.0
+offset_right = 28.0
+offset_bottom = -117.0
+text = "BASE"

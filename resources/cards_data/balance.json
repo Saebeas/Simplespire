@@ -1,0 +1,149 @@
+{
+	"player": {
+		"move_speed": 200,
+		"summon_range": 180,
+		"stun_duration": 1.0,
+		"channel_time": 2.0,
+		"interaction_radius": 80,
+		"jump_height": 140,
+		"time_to_peak": 0.38,
+		"time_to_fall": 0.28,
+		"coyote_time": 0.12,
+		"jump_buffer_time": 0.12,
+		"fast_fall_multiplier": 2.2
+	},
+	"base": {
+		"hp": 1000
+	},
+	"crystal_nodes": {
+		"base_zone":    { "yield": 10, "pack_chance": 0.01  },
+		"t1_t2_zone":   { "yield": 15, "pack_chance": 0.025 },
+		"t3_zone":      { "yield": 25, "pack_chance": 0.04  },
+		"t4_t5_zone":   { "yield": 35, "pack_chance": 0.10  },
+		"enemy_zone":   { "yield": 50, "pack_chance": 0.10  }
+	},
+	"basic_miner": {
+		"cost": 50,
+		"output_per_tick": 5,
+		"tick_interval": 3.0,
+		"hp": 75,
+		"move_speed": 60
+	},
+	"waves": {
+		"interval": 15.0,
+		"base_creep_count": 3,
+		"base_creep_hp": 40,
+		"base_creep_dps": 10,
+		"base_creep_speed": 120,
+		"base_loot_min": 15,
+		"base_loot_max": 20,
+		"scaling_rate": 0.10,
+		"spawn_stagger": 0.5,
+		"max_creeps_per_wave": 10
+	},
+	"tower_boss": {
+		"hp": 500,
+		"dps": 25,
+		"attack_range": 80,
+		"leash_radius": 200,
+		"aggro_radius": 250,
+		"move_speed": 90
+	},
+	"end_boss": {
+		"base_hp": 2000,
+		"base_dps": 50,
+		"hp_reduction_per_tower": 0.15,
+		"dps_reduction_per_tower": 0.10,
+		"min_strength_ratio": 0.25
+	},
+	"towers": {
+		"count": 5,
+		"garrison_slots": 2
+	},
+	"cards": {
+		"deck_size": 15,
+		"hand_size": 4
+	},
+	"card_definitions": {
+		"crystal_golem": {
+			"display_name": "Crystal Golem",
+			"role": 0,
+			"rarity": 0,
+			"cost": 30,
+			"hp": 200,
+			"dps": 8.0,
+			"attack_range": 0.0,
+			"move_speed": 80.0,
+			"spawn_count": 1,
+			"boss_damage_multiplier": 1.0
+		},
+		"arcane_soldier": {
+			"display_name": "Arcane Soldier",
+			"role": 5,
+			"rarity": 0,
+			"cost": 25,
+			"hp": 120,
+			"dps": 15.0,
+			"attack_range": 0.0,
+			"move_speed": 120.0,
+			"spawn_count": 1,
+			"boss_damage_multiplier": 1.0
+		},
+		"shard_archer": {
+			"display_name": "Shard Archer",
+			"role": 2,
+			"rarity": 0,
+			"cost": 20,
+			"hp": 60,
+			"dps": 18.0,
+			"attack_range": 150.0,
+			"move_speed": 120.0,
+			"spawn_count": 1,
+			"boss_damage_multiplier": 1.0
+		},
+		"wisp_cluster": {
+			"display_name": "Wisp Cluster",
+			"role": 3,
+			"rarity": 0,
+			"cost": 15,
+			"hp": 25,
+			"dps": 6.0,
+			"attack_range": 0.0,
+			"move_speed": 160.0,
+			"spawn_count": 3,
+			"boss_damage_multiplier": 1.0
+		},
+		"blade_phantom": {
+			"display_name": "Blade Phantom",
+			"role": 1,
+			"rarity": 0,
+			"cost": 20,
+			"hp": 50,
+			"dps": 30.0,
+			"attack_range": 0.0,
+			"move_speed": 180.0,
+			"spawn_count": 1,
+			"boss_damage_multiplier": 1.0
+		},
+		"rune_breaker": {
+			"display_name": "Rune Breaker",
+			"role": 4,
+			"rarity": 0,
+			"cost": 35,
+			"hp": 150,
+			"dps": 12.0,
+			"attack_range": 0.0,
+			"move_speed": 80.0,
+			"spawn_count": 1,
+			"boss_damage_multiplier": 2.0
+		}
+	},
+	"starter_deck": [
+		{ "id": "crystal_golem",  "count": 3 },
+		{ "id": "arcane_soldier", "count": 3 },
+		{ "id": "shard_archer",   "count": 3 },
+		{ "id": "wisp_cluster",   "count": 3 },
+		{ "id": "blade_phantom",  "count": 2 },
+		{ "id": "rune_breaker",   "count": 1 }
+	]
+}
