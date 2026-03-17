@@ -6,7 +6,6 @@ extends Node2D
 	var zone: String = "base_zone"
 
 @onready var interaction_zone: Area2D  = $InteractionZone
-@onready var click_zone: Area2D        = $ClickZone
 @onready var channel_bar: ProgressBar  = $ProgressBarContainer/ChannelBar
 @onready var visual: ColorRect         = $Visual
 
@@ -37,20 +36,26 @@ func _ready() -> void:
 	interaction_zone.body_entered.connect(_on_body_entered)
 	interaction_zone.body_exited.connect(_on_body_exited)
 
-	# ClickZone — click detection only, exactly matches the visual rect
-	click_zone.input_event.connect(_on_click_zone_input)
-
+	
 	EventBus.player_stun_started.connect(_on_player_stunned)
 
 	print("[CrystalNode] Ready | Zone: %s | Yield: %d | PackChance: %.1f%%" % \
 		[zone, _yield_amount, _pack_chance * 100.0])
 
 
-func _on_click_zone_input(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
+func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-			_start_channel()
-			get_viewport().set_input_as_handled()
+			if _player_in_range and _is_mouse_over_visual():
+				_start_channel()
+				get_viewport().set_input_as_handled()
+
+
+func _is_mouse_over_visual() -> bool:
+	var mouse: Vector2 = get_global_mouse_position()
+	# Matches Visual ColorRect exactly: offset (-15,-40) size (30,40)
+	var rect := Rect2(global_position + Vector2(-15.0, -40.0), Vector2(30.0, 40.0))
+	return rect.has_point(mouse)
 
 
 func _physics_process(delta: float) -> void:
