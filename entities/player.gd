@@ -231,3 +231,12 @@ func set_channeling(value: bool) -> void:
 
 func get_facing_right() -> bool:
 	return _facing_right
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+			var mouse_pos := get_global_mouse_position()
+			for crystal in get_tree().get_nodes_in_group("crystal_node"):
+				if crystal.request_channel(mouse_pos):
+					get_viewport().set_input_as_handled()
+					break

@@ -38,24 +38,11 @@ func _ready() -> void:
 
 	
 	EventBus.player_stun_started.connect(_on_player_stunned)
-
+	add_to_group("crystal_node")
+	
 	print("[CrystalNode] Ready | Zone: %s | Yield: %d | PackChance: %.1f%%" % \
 		[zone, _yield_amount, _pack_chance * 100.0])
 
-
-func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-			if _player_in_range and _is_mouse_over_visual():
-				_start_channel()
-				get_viewport().set_input_as_handled()
-
-
-func _is_mouse_over_visual() -> bool:
-	var mouse: Vector2 = get_global_mouse_position()
-	# Matches Visual ColorRect exactly: offset (-15,-40) size (30,40)
-	var rect := Rect2(global_position + Vector2(-15.0, -40.0), Vector2(30.0, 40.0))
-	return rect.has_point(mouse)
 
 
 func _physics_process(delta: float) -> void:
@@ -155,3 +142,12 @@ func _on_body_exited(body: Node2D) -> void:
 func _on_player_stunned() -> void:
 	if _is_channeling:
 		_cancel_channel()
+		
+func request_channel(mouse_world_pos: Vector2) -> bool:
+	if not _player_in_range:
+		return false
+	var rect := Rect2(global_position + Vector2(-15.0, -40.0), Vector2(30.0, 40.0))
+	if not rect.has_point(mouse_world_pos):
+		return false
+	_start_channel()
+	return true
