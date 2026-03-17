@@ -26,6 +26,7 @@ shape = SubResource("CapsuleShape2D_b0kkn")
 [node name="StunDetector" type="Area2D" parent="." unique_id=1481773406]
 collision_layer = 0
 collision_mask = 8
+input_pickable = false
 
 [node name="StunShape" type="CollisionShape2D" parent="StunDetector" unique_id=55786180]
 position = Vector2(0, -24)

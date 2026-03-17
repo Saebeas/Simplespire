@@ -6,6 +6,7 @@ extends Node2D
 	var zone: String = "base_zone"
 
 @onready var interaction_zone: Area2D  = $InteractionZone
+@onready var click_zone: Area2D        = $ClickZone
 @onready var channel_bar: ProgressBar  = $ProgressBarContainer/ChannelBar
 @onready var visual: ColorRect         = $Visual
 
@@ -15,8 +16,8 @@ var _is_channeling: bool     = false
 var _player_in_range: bool   = false
 var _player_ref: Node        = null
 
-var _yield_amount: int   = 10
-var _pack_chance: float  = 0.01
+var _yield_amount: int  = 10
+var _pack_chance: float = 0.01
 
 
 func _ready() -> void:
@@ -32,20 +33,24 @@ func _ready() -> void:
 	channel_bar.value   = 0.0
 	channel_bar.visible = false
 
+	# InteractionZone — proximity detection only (no input_event)
 	interaction_zone.body_entered.connect(_on_body_entered)
 	interaction_zone.body_exited.connect(_on_body_exited)
+
+	# ClickZone — click detection only, exactly matches the visual rect
+	click_zone.input_event.connect(_on_click_zone_input)
+
 	EventBus.player_stun_started.connect(_on_player_stunned)
 
 	print("[CrystalNode] Ready | Zone: %s | Yield: %d | PackChance: %.1f%%" % \
 		[zone, _yield_amount, _pack_chance * 100.0])
 
 
-func _unhandled_input(event: InputEvent) -> void:
+func _on_click_zone_input(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-			if _player_in_range:
-				_start_channel()
-				get_viewport().set_input_as_handled()
+			_start_channel()
+			get_viewport().set_input_as_handled()
 
 
 func _physics_process(delta: float) -> void:
@@ -122,9 +127,8 @@ func _complete_channel() -> void:
 
 	print("[CrystalNode] Channel complete! +%d Mined Resources" % _yield_amount)
 
-	# ★ FIX 2: If mouse still held and player still in range, restart immediately
 	if _player_in_range and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-		_start_channel()  # ★ FIX 2
+		_start_channel()
 
 
 func _on_body_entered(body: Node2D) -> void:
@@ -138,10 +142,9 @@ func _on_body_exited(body: Node2D) -> void:
 	if body.is_in_group("player"):
 		_player_in_range = false
 		visual.color     = Color("#7b2fff")
-		# ★ FIX 1: Cancel BEFORE nulling _player_ref so stop_laser() can fire
 		if _is_channeling:
-			_cancel_channel()  # ★ FIX 1 — moved up, _player_ref still valid here
-		_player_ref = null     # ★ FIX 1 — nulled AFTER cancel, not before
+			_cancel_channel()
+		_player_ref = null
 
 
 func _on_player_stunned() -> void:

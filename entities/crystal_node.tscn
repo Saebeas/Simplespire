@@ -5,6 +5,9 @@
 [sub_resource type="CircleShape2D" id="CircleShape2D_gtjg0"]
 radius = 80.0
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tcijs"]
+size = Vector2(30, 40)
+
 [node name="CrystalNode" type="Node2D" unique_id=834221811]
 script = ExtResource("1_tcijs")
 
@@ -12,6 +15,7 @@ script = ExtResource("1_tcijs")
 offset_left = -15.0
 offset_top = -40.0
 offset_right = 15.0
+mouse_filter = 2
 color = Color(0.48235294, 0.18431373, 1, 1)
 
 [node name="InteractionZone" type="Area2D" parent="." unique_id=1489030810]
@@ -30,3 +34,11 @@ offset_right = 602.0
 offset_bottom = 8.0
 max_value = 1.0
 show_percentage = false
+
+[node name="ClickZone" type="Area2D" parent="." unique_id=553735226]
+collision_layer = 0
+collision_mask = 0
+
+[node name="ClickShape" type="CollisionShape2D" parent="ClickZone" unique_id=832420065]
+position = Vector2(0, -20)
+shape = SubResource("RectangleShape2D_tcijs")

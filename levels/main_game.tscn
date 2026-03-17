@@ -54,7 +54,7 @@ unique_name_in_owner = true
 unique_name_in_owner = true
 
 [node name="CrystalNode" parent="World/CrystalNodes" unique_id=834221811 instance=ExtResource("3_48shk")]
-position = Vector2(400, 560)
+position = Vector2(400, 600)
 
 [node name="Units" type="Node2D" parent="World" unique_id=348663371]
 unique_name_in_owner = true

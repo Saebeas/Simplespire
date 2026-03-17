@@ -24,23 +24,23 @@ var _jump_buffer_timer: float = 0.0
 var _was_on_floor: bool       = false
 var _jump_held: bool          = false
 var _facing_right: bool       = true
-var _channel_target: Node2D   = null  # ★ NEW
+var _channel_target: Node2D   = null
 
 @onready var visual: ColorRect     = $Visual
 @onready var stun_detector: Area2D = $StunDetector
-@onready var laser_beam: Line2D    = %LaserBeam  # ★ NEW
+@onready var laser_beam: Line2D    = %LaserBeam
 
 
 func _ready() -> void:
 	var cfg: Dictionary = DataLoader.get_balance_section("player")
-	move_speed           = float(cfg.get("move_speed",          200.0))
-	stun_duration        = float(cfg.get("stun_duration",       1.0))
-	jump_height          = float(cfg.get("jump_height",         140.0))
-	time_to_peak         = float(cfg.get("time_to_peak",        0.38))
-	time_to_fall         = float(cfg.get("time_to_fall",        0.28))
-	coyote_time          = float(cfg.get("coyote_time",         0.12))
-	jump_buffer_time     = float(cfg.get("jump_buffer_time",    0.12))
-	fast_fall_multiplier = float(cfg.get("fast_fall_multiplier",2.2))
+	move_speed           = float(cfg.get("move_speed",           200.0))
+	stun_duration        = float(cfg.get("stun_duration",        1.0))
+	jump_height          = float(cfg.get("jump_height",          140.0))
+	time_to_peak         = float(cfg.get("time_to_peak",         0.38))
+	time_to_fall         = float(cfg.get("time_to_fall",         0.28))
+	coyote_time          = float(cfg.get("coyote_time",          0.12))
+	jump_buffer_time     = float(cfg.get("jump_buffer_time",     0.12))
+	fast_fall_multiplier = float(cfg.get("fast_fall_multiplier", 2.2))
 
 	_jump_velocity = -(2.0 * jump_height) / time_to_peak
 	_jump_gravity  =  (2.0 * jump_height) / (time_to_peak * time_to_peak)
@@ -48,6 +48,10 @@ func _ready() -> void:
 
 	stun_detector.body_entered.connect(_on_stun_body_entered)
 	add_to_group("player")
+
+	# Enforce in code — Inspector alone isn't reliable across scene reloads
+	input_pickable = false
+	stun_detector.input_pickable = false
 
 	print("[Player] Ready | Speed:%.0f JumpH:%.0f Rise:%.2fs Fall:%.2fs" % \
 		[move_speed, jump_height, time_to_peak, time_to_fall])
@@ -77,7 +81,7 @@ func _process_normal(delta: float) -> void:
 	_apply_horizontal_input()
 	move_and_slide()
 	_update_state_after_move()
-	_update_laser()  # ★ NEW
+	_update_laser()
 
 
 func _apply_gravity(delta: float) -> void:
@@ -99,10 +103,8 @@ func _apply_gravity(delta: float) -> void:
 func _update_coyote(delta: float) -> void:
 	if _was_on_floor and not is_on_floor() and velocity.y >= 0.0:
 		_coyote_timer = coyote_time
-
 	if _coyote_timer > 0.0:
 		_coyote_timer -= delta
-
 	if is_on_floor():
 		_coyote_timer = 0.0
 
@@ -115,10 +117,8 @@ func _update_jump_buffer(delta: float) -> void:
 	if Input.is_action_just_pressed("move_up"):
 		_jump_buffer_timer = jump_buffer_time
 		_jump_held = true
-
 	if Input.is_action_just_released("move_up"):
 		_jump_held = false
-
 	if _jump_buffer_timer > 0.0:
 		_jump_buffer_timer -= delta
 
@@ -194,35 +194,24 @@ func _on_stun_body_entered(body: Node2D) -> void:
 		apply_stun()
 
 
-# =============================================================================
-# LASER BEAM  ★ NEW — everything below this line is new
-# =============================================================================
-
-## Called by CrystalNode when channeling begins.
-func start_laser(target: Node2D) -> void:  # ★ NEW
-	_channel_target = target                # ★ NEW
-	laser_beam.visible = true               # ★ NEW
-	laser_beam.set_point_position(0, Vector2(0, -24))              # ★ NEW
-	laser_beam.set_point_position(1, to_local(target.global_position))  # ★ NEW
+func start_laser(target: Node2D) -> void:
+	_channel_target = target
+	laser_beam.visible = true
+	laser_beam.set_point_position(0, Vector2(0, -24))
+	laser_beam.set_point_position(1, to_local(target.global_position + Vector2(0, -20)))
 
 
-## Called by CrystalNode when channeling ends for any reason.
-func stop_laser() -> void:                              # ★ NEW
-	_channel_target = null                              # ★ NEW
-	laser_beam.visible = false                          # ★ NEW
-	laser_beam.set_point_position(1, Vector2(0, -24))  # ★ NEW
+func stop_laser() -> void:
+	_channel_target = null
+	laser_beam.visible = false
+	laser_beam.set_point_position(1, Vector2(0, -24))
 
 
-## Tracks laser endpoint to the crystal node every frame.
-func _update_laser() -> void:                                               # ★ NEW
-	if _channel_target == null or not laser_beam.visible:                   # ★ NEW
-		return                                                              # ★ NEW
-	laser_beam.set_point_position(1, to_local(_channel_target.global_position))  # ★ NEW
+func _update_laser() -> void:
+	if _channel_target == null or not laser_beam.visible:
+		return
+	laser_beam.set_point_position(1, to_local(_channel_target.global_position + Vector2(0, -20)))
 
-
-# =============================================================================
-# PUBLIC API
-# =============================================================================
 
 func is_stunned() -> bool:
 	return current_state == State.STUNNED
