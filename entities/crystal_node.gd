@@ -9,15 +9,14 @@ extends Node2D
 @onready var channel_bar: ProgressBar  = $ProgressBarContainer/ChannelBar
 @onready var visual: ColorRect         = $Visual
 
-var _channel_time: float      = 2.0
-var _channel_progress: float  = 0.0
-var _is_channeling: bool      = false
-var _player_in_range: bool    = false
-var _player_ref: Node         = null
-var _mouse_was_pressed: bool  = false  # ★ tracks "just pressed" without events
+var _channel_time: float     = 2.0
+var _channel_progress: float = 0.0
+var _is_channeling: bool     = false
+var _player_in_range: bool   = false
+var _player_ref: Node        = null
 
-var _yield_amount: int  = 10
-var _pack_chance: float = 0.01
+var _yield_amount: int   = 10
+var _pack_chance: float  = 0.01
 
 
 func _ready() -> void:
@@ -35,28 +34,25 @@ func _ready() -> void:
 
 	interaction_zone.body_entered.connect(_on_body_entered)
 	interaction_zone.body_exited.connect(_on_body_exited)
-	# ★ No more input_event signal — we poll Input directly instead
 	EventBus.player_stun_started.connect(_on_player_stunned)
 
 	print("[CrystalNode] Ready | Zone: %s | Yield: %d | PackChance: %.1f%%" % \
 		[zone, _yield_amount, _pack_chance * 100.0])
 
 
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+			if _player_in_range:
+				_start_channel()
+				get_viewport().set_input_as_handled()
+
+
 func _physics_process(delta: float) -> void:
-	var mouse_pressed: bool = Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)
-
-	# ★ Detect the frame the button goes down — start channeling on that frame
-	if mouse_pressed and not _mouse_was_pressed:
-		if _player_in_range and not _is_channeling:
-			_start_channel()
-	_mouse_was_pressed = mouse_pressed  # ★ update every frame regardless
-
-	# Nothing more to do if not channeling
 	if not _is_channeling:
 		return
 
-	# ★ Three cancel conditions — any one of them stops the channel
-	if not mouse_pressed:
+	if not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		_cancel_channel()
 		return
 
@@ -64,7 +60,6 @@ func _physics_process(delta: float) -> void:
 		_cancel_channel()
 		return
 
-	# Advance progress
 	_channel_progress += delta
 	channel_bar.value = _channel_progress / _channel_time
 
@@ -127,6 +122,10 @@ func _complete_channel() -> void:
 
 	print("[CrystalNode] Channel complete! +%d Mined Resources" % _yield_amount)
 
+	# ★ FIX 2: If mouse still held and player still in range, restart immediately
+	if _player_in_range and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		_start_channel()  # ★ FIX 2
+
 
 func _on_body_entered(body: Node2D) -> void:
 	if body.is_in_group("player"):
@@ -138,10 +137,11 @@ func _on_body_entered(body: Node2D) -> void:
 func _on_body_exited(body: Node2D) -> void:
 	if body.is_in_group("player"):
 		_player_in_range = false
-		_player_ref      = null
 		visual.color     = Color("#7b2fff")
+		# ★ FIX 1: Cancel BEFORE nulling _player_ref so stop_laser() can fire
 		if _is_channeling:
-			_cancel_channel()
+			_cancel_channel()  # ★ FIX 1 — moved up, _player_ref still valid here
+		_player_ref = null     # ★ FIX 1 — nulled AFTER cancel, not before
 
 
 func _on_player_stunned() -> void:
