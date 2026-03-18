@@ -38,7 +38,7 @@ func _ready() -> void:
 	_print_landmark_positions()
 	# Wire camera to player once player is in scene
 	_attach_camera_to_player()
-
+	CardManager.build_and_draw()
 
 func _attach_camera_to_player() -> void:
 	var player: Node = get_tree().get_first_node_in_group("player")

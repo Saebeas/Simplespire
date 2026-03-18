@@ -21,6 +21,7 @@ EventBus="*uid://q00yp8sngbbu"
 GameManager="*uid://cryqhqh8ih8ld"
 ResourceManager="*uid://b7wc32e35usd6"
 DataLoader="*uid://du0b2tashmfnk"
+CardManager="*uid://dlkew0trwr661"
 
 [debug]
 

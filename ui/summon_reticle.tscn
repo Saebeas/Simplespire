@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://c6ii3xncg3r7f"]
+
+[ext_resource type="Script" uid="uid://dg7306wgiuxns" path="res://ui/summon_reticle.gd" id="1_garls"]
+
+[node name="SummonReticle" type="Node2D" unique_id=1044893941]
+script = ExtResource("1_garls")

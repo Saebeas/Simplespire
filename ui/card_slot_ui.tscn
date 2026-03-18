@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://bdb3dr7kw4my8"]
+
+[ext_resource type="Script" uid="uid://nyke8ipieh7m" path="res://ui/card_slot_ui.gd" id="1_3cd3p"]
+
+[node name="CardSlotUI" type="PanelContainer" unique_id=1524259830]
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_3cd3p")
+
+[node name="VBox" type="VBoxContainer" parent="." unique_id=643252606]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="VBox" unique_id=1949298960]
+layout_mode = 2
+
+[node name="CostLabel" type="Label" parent="VBox" unique_id=2076506328]
+layout_mode = 2
+
+[node name="RoleLabel" type="Label" parent="VBox" unique_id=950115571]
+layout_mode = 2
+
+[node name="KeyLabel" type="Label" parent="VBox" unique_id=116363949]
+layout_mode = 2
