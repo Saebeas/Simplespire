@@ -4,11 +4,10 @@
 [ext_resource type="PackedScene" uid="uid://b1qpjufb4832y" path="res://entities/PlayerBase.tscn" id="2_85s4h"]
 [ext_resource type="PackedScene" uid="uid://ov7mpmj7n1d1" path="res://entities/crystal_node.tscn" id="3_48shk"]
 [ext_resource type="PackedScene" uid="uid://dwpid3bycec2s" path="res://entities/player.tscn" id="4_61ut7"]
+[ext_resource type="PackedScene" uid="uid://c1a7dvfkakrgl" path="res://ui/hud.tscn" id="5_61a2o"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n45wb"]
 size = Vector2(9200, 64)
-
-[sub_resource type="LabelSettings" id="LabelSettings_n45wb"]
 
 [node name="MainGame" type="Node2D" unique_id=368722071]
 script = ExtResource("1_tsier")
@@ -67,10 +66,4 @@ position = Vector2(400, 552)
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=1450664061]
 
-[node name="DebugLabel" type="Label" parent="UI" unique_id=110181759]
-offset_left = 20.0
-offset_top = 20.0
-offset_right = 273.0
-offset_bottom = 43.0
-text = "Simplespire — Main Game Scene"
-label_settings = SubResource("LabelSettings_n45wb")
+[node name="HUD" parent="UI" unique_id=1145688524 instance=ExtResource("5_61a2o")]

@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://c1a7dvfkakrgl"]
+
+[ext_resource type="Script" uid="uid://bqbxbc8cthqf4" path="res://ui/hud.gd" id="1_rbyyf"]
+
+[node name="HUD" type="Control" unique_id=1145688524]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_rbyyf")
+
+[node name="ResourcePanel" type="HBoxContainer" parent="." unique_id=1773623480]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 50.0
+offset_bottom = 50.0
+
+[node name="MinedLabel" type="Label" parent="ResourcePanel" unique_id=1191070036]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.8980392, 1, 1)
+
+[node name="LootLabel" type="Label" parent="ResourcePanel" unique_id=574571863]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.8509804, 0.3019608, 1)
