@@ -42,6 +42,8 @@ func _ready() -> void:
 	jump_buffer_time     = float(cfg.get("jump_buffer_time",     0.12))
 	fast_fall_multiplier = float(cfg.get("fast_fall_multiplier", 2.2))
 
+	visual.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	
 	_jump_velocity = -(2.0 * jump_height) / time_to_peak
 	_jump_gravity  =  (2.0 * jump_height) / (time_to_peak * time_to_peak)
 	_fall_gravity  =  (2.0 * jump_height) / (time_to_fall * time_to_fall)
