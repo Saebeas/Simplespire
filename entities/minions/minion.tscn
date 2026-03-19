@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://dg4cp0qwu6y46"]
+
+[ext_resource type="Script" uid="uid://mprpwy7jdjw3" path="res://entities/minions/minion.gd" id="1_0rt21"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_7217g"]
+height = 32.0
+
+[node name="Minion" type="CharacterBody2D" unique_id=1308204533]
+script = ExtResource("1_0rt21")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=190309581]
+position = Vector2(0, -16)
+shape = SubResource("CapsuleShape2D_7217g")
+
+[node name="Visual" type="ColorRect" parent="." unique_id=675072100]
+offset_left = -12.0
+offset_top = -32.0
+offset_right = 12.0
+
+[node name="HealthBar" type="ProgressBar" parent="." unique_id=1946959343]
+offset_left = -12.0
+offset_top = -38.0
+offset_right = 12.0
+offset_bottom = -11.0
+max_value = 1.0
+value = 1.0
+show_percentage = false

@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://c1a7dvfkakrgl" path="res://ui/hud.tscn" id="5_61a2o"]
 [ext_resource type="PackedScene" uid="uid://cj0ams328yt80" path="res://ui/card_hand_ui.tscn" id="6_d7clk"]
 [ext_resource type="PackedScene" uid="uid://c6ii3xncg3r7f" path="res://ui/summon_reticle.tscn" id="7_be87d"]
+[ext_resource type="Script" uid="uid://c3l0on6id24ee" path="res://entities/minions/minion_spawner.gd" id="8_o5002"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n45wb"]
 size = Vector2(9200, 64)
@@ -57,7 +58,7 @@ unique_name_in_owner = true
 [node name="CrystalNode" parent="World/CrystalNodes" unique_id=834221811 instance=ExtResource("3_48shk")]
 position = Vector2(400, 600)
 
-[node name="Units" type="Node2D" parent="World" unique_id=348663371]
+[node name="Units" type="Node2D" parent="World" unique_id=348663371 groups=["units_container"]]
 unique_name_in_owner = true
 
 [node name="Miners" type="Node2D" parent="World" unique_id=1043270985]
@@ -84,3 +85,6 @@ grow_vertical = 0
 alignment = 1
 
 [node name="SummonReticle" parent="." unique_id=1044893941 instance=ExtResource("7_be87d")]
+
+[node name="MinionSpawner" type="Node" parent="." unique_id=1487914230]
+script = ExtResource("8_o5002")
