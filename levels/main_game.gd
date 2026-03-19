@@ -39,6 +39,7 @@ func _ready() -> void:
 	# Wire camera to player once player is in scene
 	_attach_camera_to_player()
 	CardManager.build_and_draw()
+	ResourceManager.debug_add_all(200)
 
 func _attach_camera_to_player() -> void:
 	var player: Node = get_tree().get_first_node_in_group("player")
