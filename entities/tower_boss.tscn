@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://d38ge4isg56ji"]
+
+[ext_resource type="Script" uid="uid://dagk61wdrqtr0" path="res://entities/tower_boss.gd" id="1_uxoh1"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_lxx01"]
+radius = 20.0
+height = 64.0
+
+[node name="TowerBoss" type="CharacterBody2D" unique_id=491357008]
+script = ExtResource("1_uxoh1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=321530923]
+position = Vector2(0, -32)
+shape = SubResource("CapsuleShape2D_lxx01")
+
+[node name="Visual" type="ColorRect" parent="." unique_id=1392064695]
+offset_left = -20.0
+offset_top = -64.0
+offset_right = 20.0
