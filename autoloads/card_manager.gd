@@ -9,6 +9,7 @@ const HAND_SIZE: int = 4
 
 var deck: Array = []   # Array[CardResource]
 var hand: Array = []   # Array[CardResource] — max HAND_SIZE slots (null = empty)
+var discard: Array = []
 var _active_hand_index: int = -1
 
 
@@ -41,8 +42,13 @@ func build_and_draw() -> void:
 
 func _draw_into_slot(slot: int) -> void:
 	if deck.is_empty():
-		print("[CardManager] Deck empty — nothing to draw")
-		return
+		if discard.is_empty():
+			print("[CardManager] Deck and discard both empty — nothing to draw")
+			return
+		deck = discard.duplicate()
+		discard.clear()
+		deck.shuffle()
+		print("[CardManager] Reshuffled %d cards from discard into deck" % deck.size())
 	var card = deck.pop_back()
 	hand[slot] = card
 	EventBus.card_drawn.emit(card, slot)
@@ -80,6 +86,7 @@ func _on_summon_confirmed(card: Resource, position: Vector2) -> void:
 		print("[CardManager] Not enough resources to play '%s'" % card.display_name)
 		_cancel_reticle()
 		return
+	discard.append(card)
 	hand[slot] = null
 	_active_hand_index = -1
 	EventBus.card_played.emit(card, slot, EventBus.PlayMode.PUSH)
