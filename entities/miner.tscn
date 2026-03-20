@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://c3si0rm42lojm"]
+
+[ext_resource type="Script" uid="uid://dmhuwwim86nu0" path="res://entities/miner.gd" id="1_31t5m"]
+
+[node name="Miner" type="Node2D" unique_id=1515573469]
+script = ExtResource("1_31t5m")
+
+[node name="Visual" type="ColorRect" parent="." unique_id=2083728809]
+offset_left = -10.0
+offset_top = -24.0
+offset_right = 10.0
+color = Color(0.26666668, 0.8, 0.53333336, 1)
+
+[node name="HealthBar" type="ProgressBar" parent="." unique_id=799209265]
+offset_left = -10.0
+offset_top = -32.0
+offset_right = 10.0
+offset_bottom = -5.0
+max_value = 1.0
+value = 1.0
+show_percentage = false
