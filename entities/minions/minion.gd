@@ -11,6 +11,12 @@ var move_speed: float = 120.0
 var boss_damage_multiplier: float = 1.0
 var role: int = 0
 
+const MELEE_RANGE: float = 40.0
+const ATTACK_INTERVAL: float = 1.0
+
+var _attack_timer: float = 0.0
+var _current_target: Node = null
+
 const GRAVITY: float = 980.0
 
 @onready var visual: ColorRect   = $Visual
@@ -18,6 +24,8 @@ const GRAVITY: float = 980.0
 
 
 func setup(card: CardResource) -> void:
+	collision_layer = 4  # Layer 3: player_minions
+	collision_mask = 1   # Layer 1: world/ground only
 	display_name          = card.display_name
 	max_hp                = float(card.hp)
 	hp                    = max_hp
@@ -37,13 +45,30 @@ func setup(card: CardResource) -> void:
 func _physics_process(delta: float) -> void:
 	if not GameManager.is_playing():
 		return
+
 	if not is_on_floor():
 		velocity.y += GRAVITY * delta
 	else:
 		velocity.y = 0.0
-	velocity.x = move_speed
-	move_and_slide()
 
+	_attack_timer += delta
+	_current_target = _find_nearest_target()
+
+	if _current_target != null:
+		var dist: float = _current_target.global_position.x - global_position.x
+		var effective_range: float = attack_range if attack_range > 0.0 else MELEE_RANGE
+
+		if dist <= effective_range:
+			velocity.x = 0.0
+			if _attack_timer >= ATTACK_INTERVAL:
+				_attack_timer = 0.0
+				_do_attack()
+		else:
+			velocity.x = move_speed
+	else:
+		velocity.x = move_speed
+
+	move_and_slide()
 
 func take_damage(amount: float) -> void:
 	hp = max(0.0, hp - amount)
@@ -57,6 +82,32 @@ func _die() -> void:
 	print("[Minion] %s died" % display_name)
 	queue_free()
 
+func _find_nearest_target() -> Node:
+	var nearest: Node = null
+	var nearest_dist: float = INF
+	var effective_range: float = attack_range if attack_range > 0.0 else MELEE_RANGE
+	# Look ahead up to a detection range (use attack_range for ranged, or a short window for melee)
+	var detection_range: float = max(effective_range, MELEE_RANGE) + 20.0
+
+	for creep in get_tree().get_nodes_in_group("enemy_creeps"):
+		if not is_instance_valid(creep):
+			continue
+		var dist: float = creep.global_position.x - global_position.x
+		if dist < 0.0:
+			continue  # ignore enemies behind us
+		if dist < nearest_dist:
+			nearest_dist = dist
+			nearest = creep
+	return nearest
+
+
+func _do_attack() -> void:
+	if not is_instance_valid(_current_target):
+		_current_target = null
+		return
+	var damage: float = dps
+	if _current_target.has_method("take_damage"):
+		_current_target.take_damage(damage)
 
 func _apply_role_color() -> void:
 	match role:

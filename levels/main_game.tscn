@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://cj0ams328yt80" path="res://ui/card_hand_ui.tscn" id="6_d7clk"]
 [ext_resource type="PackedScene" uid="uid://c6ii3xncg3r7f" path="res://ui/summon_reticle.tscn" id="7_be87d"]
 [ext_resource type="Script" uid="uid://c3l0on6id24ee" path="res://entities/minions/minion_spawner.gd" id="8_o5002"]
+[ext_resource type="Script" uid="uid://beootjj3oenid" path="res://systems/wave_spawner.gd" id="9_u4di8"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n45wb"]
 size = Vector2(9200, 64)
@@ -88,3 +89,6 @@ alignment = 1
 
 [node name="MinionSpawner" type="Node" parent="." unique_id=1487914230]
 script = ExtResource("8_o5002")
+
+[node name="WaveSpawner" type="Node" parent="." unique_id=1443131097]
+script = ExtResource("9_u4di8")

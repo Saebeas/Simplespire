@@ -20,6 +20,8 @@ var _current_target: Node = null
 
 
 func setup(creep_hp: float, creep_dps: float, creep_speed: float, loot: int) -> void:
+	collision_layer = 8  # Layer 4: enemy_creeps
+	collision_mask = 1   # Layer 1: world/ground only
 	max_hp      = creep_hp
 	hp          = max_hp
 	dps         = creep_dps
@@ -27,6 +29,7 @@ func setup(creep_hp: float, creep_dps: float, creep_speed: float, loot: int) -> 
 	loot_amount = loot
 	health_bar.value = 1.0
 	add_to_group("enemy_creeps")
+	add_to_group("enemy_creep")
 	EventBus.unit_spawned.emit(self, "enemy_creep")
 	print("[EnemyCreep] Spawned | HP:%.0f DPS:%.1f SPD:%.0f Loot:%d" \
 		% [max_hp, dps, move_speed, loot_amount])
