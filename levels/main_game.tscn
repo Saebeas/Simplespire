@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://bw2k6kopfga4q" path="res://levels/main_game.gd" id="1_tsier"]
 [ext_resource type="PackedScene" uid="uid://b1qpjufb4832y" path="res://entities/PlayerBase.tscn" id="2_85s4h"]
 [ext_resource type="PackedScene" uid="uid://ov7mpmj7n1d1" path="res://entities/crystal_node.tscn" id="3_48shk"]
+[ext_resource type="PackedScene" uid="uid://711d1bqt8eu5" path="res://entities/tower.tscn" id="3_32443"]
 [ext_resource type="PackedScene" uid="uid://dwpid3bycec2s" path="res://entities/player.tscn" id="4_61ut7"]
 [ext_resource type="PackedScene" uid="uid://c1a7dvfkakrgl" path="res://ui/hud.tscn" id="5_61a2o"]
 [ext_resource type="PackedScene" uid="uid://cj0ams328yt80" path="res://ui/card_hand_ui.tscn" id="6_d7clk"]
@@ -52,6 +53,9 @@ position = Vector2(300, 600)
 
 [node name="Towers" type="Node2D" parent="World" unique_id=72039174]
 unique_name_in_owner = true
+
+[node name="Tower1" parent="World/Towers" unique_id=1583120415 instance=ExtResource("3_32443")]
+position = Vector2(1344, 600)
 
 [node name="CrystalNodes" type="Node2D" parent="World" unique_id=2072981958]
 unique_name_in_owner = true

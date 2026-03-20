@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://711d1bqt8eu5"]
+
+[ext_resource type="Script" uid="uid://c8i77n4i02xld" path="res://entities/tower.gd" id="1_ixfgm"]
+
+[node name="Tower" type="Node2D" unique_id=1583120415]
+script = ExtResource("1_ixfgm")
+
+[node name="Visual" type="ColorRect" parent="." unique_id=1589870967]
+offset_left = -30.0
+offset_top = -160.0
+offset_right = 30.0
+color = Color(0.4, 0.06666667, 0.06666667, 1)
+
+[node name="NameLabel" type="Label" parent="." unique_id=1217070052]
+offset_left = -15.0
+offset_top = -175.0
+offset_right = 25.0
+offset_bottom = -152.0
+text = "T1"

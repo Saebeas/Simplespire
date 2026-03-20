@@ -19,9 +19,9 @@ offset_right = 12.0
 
 [node name="HealthBar" type="ProgressBar" parent="." unique_id=1946959343]
 offset_left = -12.0
-offset_top = -38.0
+offset_top = -39.32
 offset_right = 12.0
-offset_bottom = -11.0
+offset_bottom = -33.32
 max_value = 1.0
 value = 1.0
 show_percentage = false

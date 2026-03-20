@@ -17,3 +17,12 @@ shape = SubResource("CapsuleShape2D_lxx01")
 offset_left = -20.0
 offset_top = -64.0
 offset_right = 20.0
+
+[node name="HealthBar" type="ProgressBar" parent="." unique_id=1880117661]
+offset_left = -20.0
+offset_top = -72.0
+offset_right = 20.0
+offset_bottom = -66.0
+max_value = 1.0
+value = 1.0
+show_percentage = false
