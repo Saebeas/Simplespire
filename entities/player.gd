@@ -26,6 +26,8 @@ var _jump_held: bool          = false
 var _facing_right: bool       = true
 var _channel_target: Node2D   = null
 
+var _god_mode: bool = false
+
 @onready var visual: ColorRect     = $Visual
 @onready var stun_detector: Area2D = $StunDetector
 @onready var laser_beam: Line2D    = %LaserBeam
@@ -59,6 +61,7 @@ func _ready() -> void:
 		[move_speed, jump_height, time_to_peak, time_to_fall])
 	print("[Player] Derived | JumpVel:%.1f JumpGrav:%.1f FallGrav:%.1f" % \
 		[_jump_velocity, _jump_gravity, _fall_gravity])
+	print("[Player] Debug: F5=god mode, F6=+500 resources, F7=+500 loot, F8=kill all enemies")
 
 
 func _physics_process(delta: float) -> void:
@@ -165,6 +168,8 @@ func _update_state_after_move() -> void:
 
 
 func apply_stun() -> void:
+	if _god_mode:
+		return
 	if current_state == State.STUNNED:
 		return
 	current_state = State.STUNNED
@@ -235,6 +240,7 @@ func get_facing_right() -> bool:
 	return _facing_right
 
 func _unhandled_input(event: InputEvent) -> void:
+	_debug_input(event)
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 			var mouse_pos := get_global_mouse_position()
@@ -242,3 +248,30 @@ func _unhandled_input(event: InputEvent) -> void:
 				if crystal.request_channel(mouse_pos):
 					get_viewport().set_input_as_handled()
 					break
+
+func _debug_input(event: InputEvent) -> void:
+	if not event is InputEventKey or not event.pressed or event.echo:
+		return
+	match event.keycode:
+		KEY_F5:
+			_god_mode = !_god_mode
+			if _god_mode:
+				move_speed = 600.0
+				_jump_velocity *= 1.5
+				print("[DEBUG] God mode ON — fast move, high jump, no stun")
+			else:
+				var cfg: Dictionary = DataLoader.get_balance_section("player")
+				move_speed = float(cfg.get("move_speed", 200.0))
+				_jump_velocity = -(2.0 * jump_height) / time_to_peak
+				print("[DEBUG] God mode OFF")
+		KEY_F6:
+			ResourceManager.add_mined(500)
+			print("[DEBUG] +500 Mined Resources")
+		KEY_F7:
+			ResourceManager.add_loot(500)
+			print("[DEBUG] +500 Monster Loot")
+		KEY_F8:
+			for enemy in get_tree().get_nodes_in_group("enemy_creeps"):
+				if is_instance_valid(enemy) and enemy.has_method("take_damage"):
+					enemy.take_damage(99999)
+			print("[DEBUG] Killed all enemies")

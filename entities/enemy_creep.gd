@@ -11,6 +11,7 @@ var loot_amount: int = 15
 const GRAVITY: float = 980.0
 const MELEE_RANGE: float = 40.0
 const ATTACK_INTERVAL: float = 1.0
+const MIN_SEPARATION: float = 20.0
 
 var _attack_timer: float = 0.0
 var _current_target: Node = null
@@ -69,7 +70,7 @@ func _physics_process(delta: float) -> void:
 			velocity.x = dir * move_speed
 	else:
 		velocity.x = -move_speed
-	
+	_apply_separation()
 	move_and_slide()
 
 func _find_nearest_target() -> Node:
@@ -140,3 +141,21 @@ func _die() -> void:
 	EventBus.loot_dropped.emit(loot_amount, global_position)
 	print("[EnemyCreep] Died | +%d Loot" % loot_amount)
 	queue_free()
+
+func _apply_separation() -> void:
+	for other in get_tree().get_nodes_in_group("enemy_creeps"):
+		if other == self or not is_instance_valid(other):
+			continue
+		if other.is_in_group("tower_bosses"):
+			continue
+		if other is EndBoss:
+			continue
+		var diff: float = other.global_position.x - global_position.x
+		if diff < 0.0 and diff > -MIN_SEPARATION and velocity.x < 0.0:
+			velocity.x = 0.0
+			global_position.x = other.global_position.x + MIN_SEPARATION
+			return
+		if diff > 0.0 and diff < MIN_SEPARATION and velocity.x > 0.0:
+			velocity.x = 0.0
+			global_position.x = other.global_position.x - MIN_SEPARATION
+			return

@@ -23,6 +23,8 @@ var _current_target: Node = null
 
 const GRAVITY: float = 980.0
 
+const MIN_SEPARATION: float = 18.0
+
 @onready var visual: ColorRect   = $Visual
 @onready var health_bar: ProgressBar = $HealthBar
 
@@ -103,7 +105,7 @@ func _physics_process(delta: float) -> void:
 					velocity.x = dir * move_speed
 		else:
 			velocity.x = move_speed
-
+	_apply_separation()
 	move_and_slide()
 
 func take_damage(amount: float) -> void:
@@ -139,6 +141,8 @@ func _do_attack() -> void:
 		_current_target = null
 		return
 	var damage: float = dps
+	if _current_target.is_in_group("tower_bosses") and boss_damage_multiplier > 1.0:
+		damage *= boss_damage_multiplier
 	if _current_target.has_method("take_damage"):
 		_current_target.take_damage(damage)
 
@@ -163,3 +167,19 @@ func ungarrison() -> void:
 	_is_garrisoned = false
 	garrisoned_tower_index = -1
 	print("[Minion] %s ungarrisoned — pushing forward" % display_name)
+
+func _apply_separation() -> void:
+	for other in get_tree().get_nodes_in_group("player_minions"):
+		if other == self or not is_instance_valid(other):
+			continue
+		var diff: float = other.global_position.x - global_position.x
+		# Other is ahead of us and too close
+		if diff > 0.0 and diff < MIN_SEPARATION and velocity.x > 0.0:
+			velocity.x = 0.0
+			global_position.x = other.global_position.x - MIN_SEPARATION
+			return
+		# Other is behind us and too close (we're retreating into them)
+		if diff < 0.0 and diff > -MIN_SEPARATION and velocity.x < 0.0:
+			velocity.x = 0.0
+			global_position.x = other.global_position.x + MIN_SEPARATION
+			return
