@@ -169,17 +169,14 @@ func ungarrison() -> void:
 	print("[Minion] %s ungarrisoned — pushing forward" % display_name)
 
 func _apply_separation() -> void:
+	var push: float = 0.0
 	for other in get_tree().get_nodes_in_group("player_minions"):
 		if other == self or not is_instance_valid(other):
 			continue
-		var diff: float = other.global_position.x - global_position.x
-		# Other is ahead of us and too close
-		if diff > 0.0 and diff < MIN_SEPARATION and velocity.x > 0.0:
-			velocity.x = 0.0
-			global_position.x = other.global_position.x - MIN_SEPARATION
-			return
-		# Other is behind us and too close (we're retreating into them)
-		if diff < 0.0 and diff > -MIN_SEPARATION and velocity.x < 0.0:
-			velocity.x = 0.0
-			global_position.x = other.global_position.x + MIN_SEPARATION
-			return
+		var diff: float = global_position.x - other.global_position.x
+		if abs(diff) < MIN_SEPARATION:
+			var strength: float = (MIN_SEPARATION - abs(diff)) / MIN_SEPARATION
+			if diff == 0.0:
+				diff = randf_range(-1.0, 1.0)
+			push += sign(diff) * strength * 3.0
+	global_position.x += push

@@ -143,6 +143,7 @@ func _die() -> void:
 	queue_free()
 
 func _apply_separation() -> void:
+	var push: float = 0.0
 	for other in get_tree().get_nodes_in_group("enemy_creeps"):
 		if other == self or not is_instance_valid(other):
 			continue
@@ -150,12 +151,10 @@ func _apply_separation() -> void:
 			continue
 		if other is EndBoss:
 			continue
-		var diff: float = other.global_position.x - global_position.x
-		if diff < 0.0 and diff > -MIN_SEPARATION and velocity.x < 0.0:
-			velocity.x = 0.0
-			global_position.x = other.global_position.x + MIN_SEPARATION
-			return
-		if diff > 0.0 and diff < MIN_SEPARATION and velocity.x > 0.0:
-			velocity.x = 0.0
-			global_position.x = other.global_position.x - MIN_SEPARATION
-			return
+		var diff: float = global_position.x - other.global_position.x
+		if abs(diff) < MIN_SEPARATION:
+			var strength: float = (MIN_SEPARATION - abs(diff)) / MIN_SEPARATION
+			if diff == 0.0:
+				diff = randf_range(-1.0, 1.0)
+			push += sign(diff) * strength * 3.0
+	global_position.x += push
