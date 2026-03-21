@@ -2,6 +2,9 @@
 
 [ext_resource type="Script" uid="uid://bqbxbc8cthqf4" path="res://ui/hud.gd" id="1_rbyyf"]
 
+[sub_resource type="LabelSettings" id="LabelSettings_rbyyf"]
+font_size = 48
+
 [node name="HUD" type="Control" unique_id=1145688524]
 layout_mode = 3
 anchors_preset = 15
@@ -35,3 +38,20 @@ offset_right = 173.0
 offset_bottom = 81.0
 focus_mode = 0
 text = "Buy Miner (50 Loot)"
+
+[node name="ResultLabel" type="Label" parent="." unique_id=1517782058]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -106.0
+offset_top = -33.5
+offset_right = 106.0
+offset_bottom = 33.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "VICTORY!"
+label_settings = SubResource("LabelSettings_rbyyf")
+horizontal_alignment = 1

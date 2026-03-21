@@ -5,6 +5,7 @@ extends Control
 @onready var mined_label: Label = $ResourcePanel/MinedLabel
 @onready var loot_label: Label  = $ResourcePanel/LootLabel
 @onready var miner_button: Button = $MinerButton
+@onready var result_label: Label = $ResultLabel
 
 const MINER_SCENE := preload("res://entities/miner.tscn")
 
@@ -12,7 +13,11 @@ func _ready() -> void:
 	EventBus.resources_changed.connect(_on_resources_changed)
 	_on_resources_changed(ResourceManager.get_mined(), ResourceManager.get_loot())
 	miner_button.pressed.connect(_on_miner_button_pressed)
-
+	result_label.visible = false
+	EventBus.level_won.connect(_on_level_won)
+	EventBus.level_lost.connect(_on_level_lost)
+	
+	
 func _on_resources_changed(mined: int, loot: int) -> void:
 	mined_label.text = "Mined: %d" % mined
 	loot_label.text  = "Loot:  %d" % loot
@@ -53,3 +58,14 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_F:
 			_on_miner_button_pressed()
+
+func _on_level_won() -> void:
+	result_label.text = "VICTORY!"
+	result_label.add_theme_color_override("font_color", Color("#44ff44"))
+	result_label.visible = true
+
+
+func _on_level_lost() -> void:
+	result_label.text = "DEFEAT"
+	result_label.add_theme_color_override("font_color", Color("#ff4444"))
+	result_label.visible = true

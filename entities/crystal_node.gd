@@ -70,6 +70,15 @@ func _start_channel() -> void:
 	if not GameManager.is_playing():
 		return
 
+	# Block mining at hostile towers
+	for tower in get_tree().get_nodes_in_group("tower_bosses"):
+		if not is_instance_valid(tower):
+			continue
+		if tower.faction == EventBus.Faction.ENEMY:
+			if abs(global_position.x - tower.global_position.x) < 100.0:
+				print("[CrystalNode] Can't mine near hostile tower!")
+				return
+
 	_is_channeling    = true
 	_channel_progress = 0.0
 	channel_bar.value   = 0.0

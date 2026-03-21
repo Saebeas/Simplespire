@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://ov7mpmj7n1d1" path="res://entities/crystal_node.tscn" id="3_48shk"]
 [ext_resource type="PackedScene" uid="uid://711d1bqt8eu5" path="res://entities/tower.tscn" id="3_32443"]
 [ext_resource type="PackedScene" uid="uid://dwpid3bycec2s" path="res://entities/player.tscn" id="4_61ut7"]
+[ext_resource type="PackedScene" uid="uid://b02exvorx25e5" path="res://entities/end_boss.tscn" id="5_4qlv2"]
 [ext_resource type="PackedScene" uid="uid://c1a7dvfkakrgl" path="res://ui/hud.tscn" id="5_61a2o"]
 [ext_resource type="PackedScene" uid="uid://cj0ams328yt80" path="res://ui/card_hand_ui.tscn" id="6_d7clk"]
 [ext_resource type="PackedScene" uid="uid://c6ii3xncg3r7f" path="res://ui/summon_reticle.tscn" id="7_be87d"]
@@ -81,6 +82,9 @@ position = Vector2(400, 600)
 
 [node name="Units" type="Node2D" parent="World" unique_id=348663371 groups=["units_container"]]
 unique_name_in_owner = true
+
+[node name="EndBoss" parent="World/Units" unique_id=969042002 instance=ExtResource("5_4qlv2")]
+position = Vector2(8700, 552)
 
 [node name="Miners" type="Node2D" parent="World" unique_id=1043270985 groups=["miners_container"]]
 unique_name_in_owner = true

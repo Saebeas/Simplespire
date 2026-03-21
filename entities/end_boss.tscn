@@ -1,0 +1,36 @@
+[gd_scene format=3 uid="uid://b02exvorx25e5"]
+
+[ext_resource type="Script" uid="uid://iq7qsdbaychk" path="res://entities/end_boss.gd" id="1_pit5u"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_pivnr"]
+radius = 24.0
+height = 80.0
+
+[node name="EndBoss" type="CharacterBody2D" unique_id=969042002]
+script = ExtResource("1_pit5u")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1625018081]
+position = Vector2(0, -40)
+shape = SubResource("CapsuleShape2D_pivnr")
+
+[node name="Visual" type="ColorRect" parent="." unique_id=897014851]
+offset_left = -28.0
+offset_top = -80.0
+offset_right = 28.0
+color = Color(0.6666667, 0, 0, 1)
+
+[node name="HealthBar" type="ProgressBar" parent="." unique_id=2009559234]
+offset_left = -28.0
+offset_top = -90.0
+offset_right = 28.0
+offset_bottom = -82.0
+max_value = 1.0
+value = 1.0
+show_percentage = false
+
+[node name="NameLabel" type="Label" parent="." unique_id=1353979695]
+offset_left = -38.72
+offset_top = -111.605
+offset_right = 40.28
+offset_bottom = -88.605
+text = "END BOSS"
