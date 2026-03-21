@@ -7,6 +7,11 @@ var dps: float = 25.0
 var attack_range: float = 80.0
 var faction: int = EventBus.Faction.ENEMY
 var tower_index: int = -1
+var home_position: Vector2 = Vector2.ZERO
+var leash_radius: float = 200.0
+var aggro_radius: float = 250.0
+var move_speed: float = 90.0
+var _is_dead: bool = false
 
 const GRAVITY: float = 980.0
 const ATTACK_INTERVAL: float = 1.0
@@ -34,6 +39,12 @@ func setup(p_tower_index: int, p_faction: int) -> void:
 	health_bar.value = 1.0
 	_update_groups()
 	_update_faction_visuals()
+	home_position = global_position
+	leash_radius = float(cfg.get("leash_radius", 200))
+	aggro_radius = float(cfg.get("aggro_radius", 250))
+	move_speed = float(cfg.get("move_speed", 90))
+	visual.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	health_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	print("[TowerBoss] Spawned at tower %d | Faction:%d HP:%.0f DPS:%.1f" \
 		% [tower_index, faction, max_hp, dps])
 
@@ -64,16 +75,33 @@ func _physics_process(delta: float) -> void:
 		velocity.y += GRAVITY * delta
 	else:
 		velocity.y = 0.0
-	velocity.x = 0.0
-	move_and_slide()
 
 	_attack_timer += delta
 	_current_target = _find_nearest_target()
 
-	if _current_target != null and _attack_timer >= ATTACK_INTERVAL:
-		_attack_timer = 0.0
-		_do_attack()
+	if _current_target != null:
+		var dist_to_target: float = abs(global_position.x - _current_target.global_position.x)
+		var dist_from_home: float = abs(global_position.x - home_position.x)
+		var dir: float = sign(_current_target.global_position.x - global_position.x)
 
+		if dist_to_target <= attack_range:
+			velocity.x = 0.0
+			if _attack_timer >= ATTACK_INTERVAL:
+				_attack_timer = 0.0
+				_do_attack()
+		elif dist_from_home < aggro_radius:
+			velocity.x = dir * move_speed
+		else:
+			velocity.x = 0.0
+	else:
+		var dist_home: float = global_position.x - home_position.x
+		if abs(dist_home) > 5.0:
+			velocity.x = -sign(dist_home) * move_speed
+		else:
+			velocity.x = 0.0
+			global_position.x = home_position.x
+
+	move_and_slide()
 
 func _find_nearest_target() -> Node:
 	var target_group: String
@@ -83,7 +111,7 @@ func _find_nearest_target() -> Node:
 		target_group = "enemy_creeps"
 
 	var nearest: Node = null
-	var nearest_dist: float = attack_range
+	var nearest_dist: float = aggro_radius
 	for unit in get_tree().get_nodes_in_group(target_group):
 		if not is_instance_valid(unit):
 			continue
@@ -95,7 +123,6 @@ func _find_nearest_target() -> Node:
 			nearest = unit
 	return nearest
 
-
 func _do_attack() -> void:
 	if not is_instance_valid(_current_target):
 		_current_target = null
@@ -105,6 +132,8 @@ func _do_attack() -> void:
 
 
 func take_damage(amount: float) -> void:
+	if _is_dead:
+		return
 	hp = max(0.0, hp - amount)
 	health_bar.value = hp / max_hp
 	if hp <= 0.0:
@@ -112,6 +141,9 @@ func take_damage(amount: float) -> void:
 
 
 func _die() -> void:
+	if _is_dead:
+		return
+	_is_dead = true
 	EventBus.boss_died.emit(tower_index, faction)
 	print("[TowerBoss] Died at tower %d" % tower_index)
 	queue_free()

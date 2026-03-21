@@ -16,7 +16,8 @@ func _ready() -> void:
 	max_hp = int(base_data.get("hp", 1000))
 	current_hp = max_hp
 	print("[PlayerBase] Initialized | HP: %d/%d" % [current_hp, max_hp])
-
+	$Visual.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	$NameLabel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	# DEBUG: simulate two damage hits — remove after verifying
 	# call_deferred("_debug_damage_test")
 

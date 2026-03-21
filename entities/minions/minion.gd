@@ -38,6 +38,8 @@ func setup(card: CardResource) -> void:
 	health_bar.value = 1.0
 	add_to_group("player_minions")
 	EventBus.unit_spawned.emit(self, display_name)
+	visual.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	health_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	print("[Minion] Spawned: %s | HP:%.0f DPS:%.1f SPD:%.0f" \
 		% [display_name, max_hp, dps, move_speed])
 
@@ -55,8 +57,9 @@ func _physics_process(delta: float) -> void:
 	_current_target = _find_nearest_target()
 
 	if _current_target != null:
-		var dist: float = _current_target.global_position.x - global_position.x
+		var dist: float = abs(_current_target.global_position.x - global_position.x)
 		var effective_range: float = attack_range if attack_range > 0.0 else MELEE_RANGE
+		var dir: float = sign(_current_target.global_position.x - global_position.x)
 
 		if dist <= effective_range:
 			velocity.x = 0.0
@@ -64,10 +67,10 @@ func _physics_process(delta: float) -> void:
 				_attack_timer = 0.0
 				_do_attack()
 		else:
-			velocity.x = move_speed
+			velocity.x = dir * move_speed
 	else:
 		velocity.x = move_speed
-
+	
 	move_and_slide()
 
 func take_damage(amount: float) -> void:
@@ -85,21 +88,16 @@ func _die() -> void:
 func _find_nearest_target() -> Node:
 	var nearest: Node = null
 	var nearest_dist: float = INF
-	var effective_range: float = attack_range if attack_range > 0.0 else MELEE_RANGE
-	# Look ahead up to a detection range (use attack_range for ranged, or a short window for melee)
-	var detection_range: float = max(effective_range, MELEE_RANGE) + 20.0
+	var aggro_range: float = max(attack_range, 40.0) + 150.0
 
 	for creep in get_tree().get_nodes_in_group("enemy_creeps"):
 		if not is_instance_valid(creep):
 			continue
-		var dist: float = creep.global_position.x - global_position.x
-		if dist < 0.0:
-			continue  # ignore enemies behind us
-		if dist < nearest_dist:
+		var dist: float = abs(global_position.x - creep.global_position.x)
+		if dist < aggro_range and dist < nearest_dist:
 			nearest_dist = dist
 			nearest = creep
 	return nearest
-
 
 func _do_attack() -> void:
 	if not is_instance_valid(_current_target):

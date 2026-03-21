@@ -31,6 +31,8 @@ func setup(creep_hp: float, creep_dps: float, creep_speed: float, loot: int) -> 
 	add_to_group("enemy_creeps")
 	add_to_group("enemy_creep")
 	EventBus.unit_spawned.emit(self, "enemy_creep")
+	visual.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	health_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	print("[EnemyCreep] Spawned | HP:%.0f DPS:%.1f SPD:%.0f Loot:%d" \
 		% [max_hp, dps, move_speed, loot_amount])
 
@@ -48,22 +50,28 @@ func _physics_process(delta: float) -> void:
 	_current_target = _find_nearest_target()
 
 	if _current_target != null:
-		velocity.x = 0.0
-		if _attack_timer >= ATTACK_INTERVAL:
-			_attack_timer = 0.0
-			_do_attack()
+		var dist: float = abs(_current_target.global_position.x - global_position.x)
+		var dir: float = sign(_current_target.global_position.x - global_position.x)
+
+		if dist <= MELEE_RANGE:
+			velocity.x = 0.0
+			if _attack_timer >= ATTACK_INTERVAL:
+				_attack_timer = 0.0
+				_do_attack()
+		else:
+			velocity.x = dir * move_speed
 	else:
 		velocity.x = -move_speed
-
+	
 	move_and_slide()
 
-	if global_position.x <= 320.0:
-		_damage_base()
 
 
 func _find_nearest_target() -> Node:
 	var nearest: Node = null
-	var nearest_dist: float = MELEE_RANGE
+	var nearest_dist: float = MELEE_RANGE + 150.0
+
+	# Priority 1: player minions
 	for minion in get_tree().get_nodes_in_group("player_minions"):
 		if not is_instance_valid(minion):
 			continue
@@ -71,9 +79,28 @@ func _find_nearest_target() -> Node:
 		if dist < nearest_dist:
 			nearest_dist = dist
 			nearest = minion
+
+	# Priority 2: miners (only if no minion found)
+	if nearest == null:
+		nearest_dist = MELEE_RANGE + 150.0
+		for miner in get_tree().get_nodes_in_group("miners"):
+			if not is_instance_valid(miner):
+				continue
+			var dist: float = abs(global_position.x - miner.global_position.x)
+			if dist < nearest_dist:
+				nearest_dist = dist
+				nearest = miner
+
+	# Priority 3: player base
+	if nearest == null:
+		var base: Node = get_tree().get_first_node_in_group("player_base")
+		if base != null and is_instance_valid(base):
+			var dist: float = abs(global_position.x - base.global_position.x)
+			if dist < MELEE_RANGE:
+				nearest = base
+
 	return nearest
-
-
+	
 func _do_attack() -> void:
 	if not is_instance_valid(_current_target):
 		_current_target = null
@@ -94,12 +121,4 @@ func _die() -> void:
 	ResourceManager.add_loot(loot_amount)
 	EventBus.loot_dropped.emit(loot_amount, global_position)
 	print("[EnemyCreep] Died | +%d Loot" % loot_amount)
-	queue_free()
-
-
-func _damage_base() -> void:
-	var base := get_tree().get_first_node_in_group("player_base")
-	if base != null and base.has_method("take_damage"):
-		base.take_damage(10)
-	print("[EnemyCreep] Reached player base!")
 	queue_free()
