@@ -58,7 +58,8 @@ func _physics_process(delta: float) -> void:
 		velocity.y = 0.0
 
 	_attack_timer += delta
-	_current_target = _find_nearest_target()
+	if _current_target == null or not is_instance_valid(_current_target):
+		_current_target = _find_nearest_target()
 
 	if _is_garrisoned:
 		if _current_target != null:
@@ -85,16 +86,21 @@ func _physics_process(delta: float) -> void:
 				global_position.x = _garrison_home.x
 	else:
 		if _current_target != null:
-			var dist: float = abs(_current_target.global_position.x - global_position.x)
-			var effective_range: float = attack_range if attack_range > 0.0 else MELEE_RANGE
-			var dir: float = sign(_current_target.global_position.x - global_position.x)
-			if dist <= effective_range:
-				velocity.x = 0.0
-				if _attack_timer >= ATTACK_INTERVAL:
-					_attack_timer = 0.0
-					_do_attack()
+			var drop_dist: float = abs(_current_target.global_position.x - global_position.x)
+			if drop_dist > max(attack_range, MELEE_RANGE) + 200.0:
+				_current_target = null
+				velocity.x = move_speed
 			else:
-				velocity.x = dir * move_speed
+				var dist: float = abs(_current_target.global_position.x - global_position.x)
+				var effective_range: float = attack_range if attack_range > 0.0 else MELEE_RANGE
+				var dir: float = sign(_current_target.global_position.x - global_position.x)
+				if dist <= effective_range:
+					velocity.x = 0.0
+					if _attack_timer >= ATTACK_INTERVAL:
+						_attack_timer = 0.0
+						_do_attack()
+				else:
+					velocity.x = dir * move_speed
 		else:
 			velocity.x = move_speed
 

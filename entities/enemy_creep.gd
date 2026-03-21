@@ -47,13 +47,20 @@ func _physics_process(delta: float) -> void:
 		velocity.y = 0.0
 
 	_attack_timer += delta
-	_current_target = _find_nearest_target()
+
+	# Only find a new target if we don't have one
+	if _current_target == null or not is_instance_valid(_current_target):
+		_current_target = _find_nearest_target()
 
 	if _current_target != null:
 		var dist: float = abs(_current_target.global_position.x - global_position.x)
 		var dir: float = sign(_current_target.global_position.x - global_position.x)
 
-		if dist <= MELEE_RANGE:
+		# Drop target if it got too far away
+		if dist > MELEE_RANGE + 200.0:
+			_current_target = null
+			velocity.x = -move_speed
+		elif dist <= MELEE_RANGE:
 			velocity.x = 0.0
 			if _attack_timer >= ATTACK_INTERVAL:
 				_attack_timer = 0.0
@@ -65,52 +72,52 @@ func _physics_process(delta: float) -> void:
 	
 	move_and_slide()
 
-
-
 func _find_nearest_target() -> Node:
-	var nearest: Node = null
-	var nearest_dist: float = MELEE_RANGE + 150.0
+	var best: Node = null
+	var best_x: float = -INF
+	var search_range: float = MELEE_RANGE + 150.0
 
-	# Priority 1: player minions (includes garrisoned)
+	# Priority 1: player minions — prefer the rightmost (frontline) one in range
 	for minion in get_tree().get_nodes_in_group("player_minions"):
 		if not is_instance_valid(minion):
 			continue
 		var dist: float = abs(global_position.x - minion.global_position.x)
-		if dist < nearest_dist:
-			nearest_dist = dist
-			nearest = minion
+		if dist < search_range and minion.global_position.x > best_x:
+			best_x = minion.global_position.x
+			best = minion
 
 	# Priority 2: player tower bosses
-	if nearest == null:
-		nearest_dist = MELEE_RANGE + 150.0
+	if best == null:
+		best_x = -INF
 		for boss in get_tree().get_nodes_in_group("player_bosses"):
 			if not is_instance_valid(boss):
 				continue
 			var dist: float = abs(global_position.x - boss.global_position.x)
-			if dist < nearest_dist:
-				nearest_dist = dist
-				nearest = boss
+			if dist < search_range and boss.global_position.x > best_x:
+				best_x = boss.global_position.x
+				best = boss
 
 	# Priority 3: miners
-	if nearest == null:
-		nearest_dist = MELEE_RANGE + 150.0
+	if best == null:
+		best_x = -INF
 		for miner in get_tree().get_nodes_in_group("miners"):
 			if not is_instance_valid(miner):
 				continue
 			var dist: float = abs(global_position.x - miner.global_position.x)
-			if dist < nearest_dist:
-				nearest_dist = dist
-				nearest = miner
+			if dist < search_range and miner.global_position.x > best_x:
+				best_x = miner.global_position.x
+				best = miner
 
 	# Priority 4: player base
-	if nearest == null:
+	if best == null:
 		var base: Node = get_tree().get_first_node_in_group("player_base")
 		if base != null and is_instance_valid(base):
 			var dist: float = abs(global_position.x - base.global_position.x)
 			if dist < MELEE_RANGE:
-				nearest = base
+				best = base
 
-	return nearest
+	return best
+
 
 func _do_attack() -> void:
 	if not is_instance_valid(_current_target):

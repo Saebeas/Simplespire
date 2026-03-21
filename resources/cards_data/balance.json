@@ -73,7 +73,7 @@
 			"hp": 200,
 			"dps": 8.0,
 			"attack_range": 0.0,
-			"move_speed": 80.0,
+			"move_speed": 120.0,
 			"spawn_count": 1,
 			"boss_damage_multiplier": 1.0
 		},
@@ -121,7 +121,7 @@
 			"hp": 50,
 			"dps": 30.0,
 			"attack_range": 0.0,
-			"move_speed": 180.0,
+			"move_speed": 120.0,
 			"spawn_count": 1,
 			"boss_damage_multiplier": 1.0
 		},

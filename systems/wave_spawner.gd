@@ -19,6 +19,8 @@ var _scaling_rate: float = 0.10
 var _spawn_stagger: float = 0.5
 var _max_creeps: int = 10
 
+var _grace_period: bool = true
+
 @onready var units_container: Node2D = get_tree().get_first_node_in_group("units_container")
 
 
@@ -36,15 +38,18 @@ func _ready() -> void:
 	_max_creeps     = int(cfg.get("max_creeps_per_wave", 10))
 
 	# Spawn first wave after a short delay so player can settle in
-	_wave_timer = _interval - 3.0
+	_wave_timer = 0.0
+	_grace_period = true
 	print("[WaveSpawner] Ready | Interval:%.0fs BaseHP:%.0f Scaling:%.0f%%" \
 		% [_interval, _base_hp, _scaling_rate * 100.0])
-
+	EventBus.tower_captured.connect(_on_tower_captured)
 
 func _process(delta: float) -> void:
 	if not GameManager.is_playing():
 		return
 
+	if _grace_period:
+		return
 	_wave_timer += delta
 	if _wave_timer >= _interval:
 		_wave_timer = 0.0
@@ -84,3 +89,9 @@ func _spawn_one(data: Dictionary) -> void:
 	creep.global_position = Vector2(8960.0, 552.0)
 	units_container.add_child(creep)
 	creep.setup(data["hp"], data["dps"], data["speed"], data["loot"])
+
+func _on_tower_captured(_tower_index: int) -> void:
+	if _grace_period:
+		_grace_period = false
+		_wave_timer = _interval - 5.0
+		print("[WaveSpawner] Grace period ended — first wave in 5 seconds")

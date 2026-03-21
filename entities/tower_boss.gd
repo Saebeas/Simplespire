@@ -28,7 +28,9 @@ func setup(p_tower_index: int, p_faction: int) -> void:
 	faction = p_faction
 
 	var cfg: Dictionary = DataLoader.get_balance_section("tower_boss")
-	max_hp = float(cfg.get("hp", 500))
+	var base_hp: float = float(cfg.get("hp", 500))
+	var scale: float = 0.4 + (float(p_tower_index) * 0.3)  # T1=0.4, T2=0.7, T3=1.0, T4=1.3, T5=1.6
+	max_hp = base_hp * scale
 	hp = max_hp
 	dps = float(cfg.get("dps", 25))
 	attack_range = float(cfg.get("attack_range", 80))
