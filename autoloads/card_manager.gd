@@ -89,11 +89,29 @@ func _on_summon_confirmed(card: Resource, position: Vector2) -> void:
 	discard.append(card)
 	hand[slot] = null
 	_active_hand_index = -1
-	EventBus.card_played.emit(card, slot, EventBus.PlayMode.PUSH)
-	EventBus.minion_played.emit(card, position, EventBus.PlayMode.PUSH)
+	var garrison_tower: Node = _find_garrison_tower(position)
+	if garrison_tower != null:
+		var garrison_pos: Vector2 = garrison_tower.get_garrison_position()
+		EventBus.card_played.emit(card, slot, EventBus.PlayMode.GARRISON)
+		EventBus.minion_played.emit(card, garrison_pos, EventBus.PlayMode.GARRISON)
+	else:
+		EventBus.card_played.emit(card, slot, EventBus.PlayMode.PUSH)
+		EventBus.minion_played.emit(card, position, EventBus.PlayMode.PUSH)
 	print("[CardManager] Played '%s' from slot %d" % [card.display_name, slot])
 	_draw_into_slot(slot)
 
 
 func get_hand() -> Array:
 	return hand
+
+func _find_garrison_tower(pos: Vector2) -> Node:
+	var closest: Node = null
+	var closest_dist: float = 80.0
+	for tower in get_tree().get_nodes_in_group("player_towers"):
+		if not tower.has_garrison_slot():
+			continue
+		var dist: float = abs(tower.global_position.x - pos.x)
+		if dist < closest_dist:
+			closest_dist = dist
+			closest = tower
+	return closest

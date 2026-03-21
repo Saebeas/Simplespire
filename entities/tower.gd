@@ -16,6 +16,8 @@ const ZONE_MAP: Dictionary = {
 
 var owner_faction: int = EventBus.Faction.ENEMY
 var _boss: TowerBoss = null
+var garrison_slots: Array = [null, null]
+const GARRISON_OFFSETS: Array = [-40.0, 40.0]
 
 @onready var visual: ColorRect = $Visual
 @onready var name_label: Label = $NameLabel
@@ -29,6 +31,7 @@ func _ready() -> void:
 	_spawn_crystal_nodes()
 	visual.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	EventBus.unit_died.connect(_on_unit_died)
 
 func _spawn_boss() -> void:
 	if _boss != null and is_instance_valid(_boss):
@@ -55,6 +58,7 @@ func _update_visuals() -> void:
 func _on_boss_died(idx: int, faction: int) -> void:
 	if idx != tower_index:
 		return
+	_ungarrison_all()
 	
 	if faction == EventBus.Faction.ENEMY:
 		owner_faction = EventBus.Faction.PLAYER
@@ -78,3 +82,46 @@ func _spawn_crystal_nodes() -> void:
 		node.global_position = Vector2(global_position.x + offset, global_position.y)
 		node.zone = zone_name
 		crystal_container.add_child(node)
+
+func has_garrison_slot() -> bool:
+	for slot in garrison_slots:
+		if slot == null:
+			return true
+	return false
+
+
+func get_garrison_position() -> Vector2:
+	for i in range(garrison_slots.size()):
+		if garrison_slots[i] == null:
+			return Vector2(global_position.x + GARRISON_OFFSETS[i], global_position.y - 48)
+	return global_position
+
+
+func add_garrison(minion: Node) -> int:
+	for i in range(garrison_slots.size()):
+		if garrison_slots[i] == null:
+			garrison_slots[i] = minion
+			EventBus.tower_garrison_changed.emit(tower_index, i, minion)
+			print("[Tower] Garrison slot %d filled at tower %d" % [i, tower_index + 1])
+			return i
+	return -1
+
+
+func remove_garrison(minion: Node) -> void:
+	for i in range(garrison_slots.size()):
+		if garrison_slots[i] == minion:
+			garrison_slots[i] = null
+			EventBus.tower_garrison_changed.emit(tower_index, i, null)
+			print("[Tower] Garrison slot %d cleared at tower %d" % [i, tower_index + 1])
+			return
+
+
+func _ungarrison_all() -> void:
+	for i in range(garrison_slots.size()):
+		var minion = garrison_slots[i]
+		if minion != null and is_instance_valid(minion):
+			minion.ungarrison()
+		garrison_slots[i] = null
+
+func _on_unit_died(entity: Node, _killer: Node) -> void:
+	remove_garrison(entity)

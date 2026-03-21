@@ -58,7 +58,7 @@ func _update_groups() -> void:
 		add_to_group("enemy_creeps")
 		add_to_group("enemy_creep")
 	else:
-		add_to_group("player_minions")
+		add_to_group("player_bosses")
 
 
 func _update_faction_visuals() -> void:

@@ -10,6 +10,8 @@ var attack_range: float = 0.0
 var move_speed: float = 120.0
 var boss_damage_multiplier: float = 1.0
 var role: int = 0
+var _is_garrisoned: bool = false
+var garrisoned_tower_index: int = -1
 
 const MELEE_RANGE: float = 40.0
 const ATTACK_INTERVAL: float = 1.0
@@ -56,21 +58,29 @@ func _physics_process(delta: float) -> void:
 	_attack_timer += delta
 	_current_target = _find_nearest_target()
 
-	if _current_target != null:
-		var dist: float = abs(_current_target.global_position.x - global_position.x)
-		var effective_range: float = attack_range if attack_range > 0.0 else MELEE_RANGE
-		var dir: float = sign(_current_target.global_position.x - global_position.x)
-
-		if dist <= effective_range:
-			velocity.x = 0.0
-			if _attack_timer >= ATTACK_INTERVAL:
+	if _is_garrisoned:
+		velocity.x = 0.0
+		if _current_target != null and _attack_timer >= ATTACK_INTERVAL:
+			var dist: float = abs(_current_target.global_position.x - global_position.x)
+			var effective_range: float = attack_range if attack_range > 0.0 else MELEE_RANGE
+			if dist <= effective_range:
 				_attack_timer = 0.0
 				_do_attack()
-		else:
-			velocity.x = dir * move_speed
 	else:
-		velocity.x = move_speed
-	
+		if _current_target != null:
+			var dist: float = abs(_current_target.global_position.x - global_position.x)
+			var effective_range: float = attack_range if attack_range > 0.0 else MELEE_RANGE
+			var dir: float = sign(_current_target.global_position.x - global_position.x)
+			if dist <= effective_range:
+				velocity.x = 0.0
+				if _attack_timer >= ATTACK_INTERVAL:
+					_attack_timer = 0.0
+					_do_attack()
+			else:
+				velocity.x = dir * move_speed
+		else:
+			velocity.x = move_speed
+
 	move_and_slide()
 
 func take_damage(amount: float) -> void:
@@ -83,6 +93,8 @@ func take_damage(amount: float) -> void:
 func _die() -> void:
 	EventBus.unit_died.emit(self, null)
 	print("[Minion] %s died" % display_name)
+	if _is_garrisoned:
+		EventBus.tower_garrison_changed.emit(garrisoned_tower_index, -1, null)
 	queue_free()
 
 func _find_nearest_target() -> Node:
@@ -115,3 +127,15 @@ func _apply_role_color() -> void:
 		CardResource.Role.SWARM:     visual.color = Color("#ffff44")
 		CardResource.Role.SIEGE:     visual.color = Color("#ff8844")
 		CardResource.Role.BRUISER:   visual.color = Color("#aa44ff")
+
+func garrison(tower_idx: int, garrison_pos: Vector2) -> void:
+	_is_garrisoned = true
+	garrisoned_tower_index = tower_idx
+	global_position = garrison_pos
+	print("[Minion] %s garrisoned at tower %d" % [display_name, tower_idx + 1])
+
+
+func ungarrison() -> void:
+	_is_garrisoned = false
+	garrisoned_tower_index = -1
+	print("[Minion] %s ungarrisoned — pushing forward" % display_name)

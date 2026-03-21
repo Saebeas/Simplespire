@@ -71,7 +71,7 @@ func _find_nearest_target() -> Node:
 	var nearest: Node = null
 	var nearest_dist: float = MELEE_RANGE + 150.0
 
-	# Priority 1: player minions
+	# Priority 1: player minions (includes garrisoned)
 	for minion in get_tree().get_nodes_in_group("player_minions"):
 		if not is_instance_valid(minion):
 			continue
@@ -80,7 +80,18 @@ func _find_nearest_target() -> Node:
 			nearest_dist = dist
 			nearest = minion
 
-	# Priority 2: miners (only if no minion found)
+	# Priority 2: player tower bosses
+	if nearest == null:
+		nearest_dist = MELEE_RANGE + 150.0
+		for boss in get_tree().get_nodes_in_group("player_bosses"):
+			if not is_instance_valid(boss):
+				continue
+			var dist: float = abs(global_position.x - boss.global_position.x)
+			if dist < nearest_dist:
+				nearest_dist = dist
+				nearest = boss
+
+	# Priority 3: miners
 	if nearest == null:
 		nearest_dist = MELEE_RANGE + 150.0
 		for miner in get_tree().get_nodes_in_group("miners"):
@@ -91,7 +102,7 @@ func _find_nearest_target() -> Node:
 				nearest_dist = dist
 				nearest = miner
 
-	# Priority 3: player base
+	# Priority 4: player base
 	if nearest == null:
 		var base: Node = get_tree().get_first_node_in_group("player_base")
 		if base != null and is_instance_valid(base):
@@ -100,7 +111,7 @@ func _find_nearest_target() -> Node:
 				nearest = base
 
 	return nearest
-	
+
 func _do_attack() -> void:
 	if not is_instance_valid(_current_target):
 		_current_target = null
