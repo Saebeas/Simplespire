@@ -17,3 +17,10 @@ offset_top = -175.0
 offset_right = 25.0
 offset_bottom = -152.0
 text = "T1"
+
+[node name="GarrisonLabel" type="Label" parent="." unique_id=367551478]
+offset_left = -15.0
+offset_top = -190.0
+offset_right = 25.0
+offset_bottom = -167.0
+text = "0/2"

@@ -32,6 +32,7 @@ func _ready() -> void:
 	visual.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	EventBus.unit_died.connect(_on_unit_died)
+	$GarrisonLabel.text = "0/2"
 
 func _spawn_boss() -> void:
 	if _boss != null and is_instance_valid(_boss):
@@ -54,6 +55,7 @@ func _update_visuals() -> void:
 	else:
 		if is_in_group("player_towers"):
 			remove_from_group("player_towers")
+	_update_garrison_label()
 	
 func _on_boss_died(idx: int, faction: int) -> void:
 	if idx != tower_index:
@@ -103,6 +105,7 @@ func add_garrison(minion: Node) -> int:
 			garrison_slots[i] = minion
 			EventBus.tower_garrison_changed.emit(tower_index, i, minion)
 			print("[Tower] Garrison slot %d filled at tower %d" % [i, tower_index + 1])
+			_update_garrison_label()
 			return i
 	return -1
 
@@ -113,6 +116,7 @@ func remove_garrison(minion: Node) -> void:
 			garrison_slots[i] = null
 			EventBus.tower_garrison_changed.emit(tower_index, i, null)
 			print("[Tower] Garrison slot %d cleared at tower %d" % [i, tower_index + 1])
+			_update_garrison_label()
 			return
 
 
@@ -122,6 +126,16 @@ func _ungarrison_all() -> void:
 		if minion != null and is_instance_valid(minion):
 			minion.ungarrison()
 		garrison_slots[i] = null
+	_update_garrison_label()
+
 
 func _on_unit_died(entity: Node, _killer: Node) -> void:
 	remove_garrison(entity)
+
+
+func _update_garrison_label() -> void:
+	var filled: int = 0
+	for slot in garrison_slots:
+		if slot != null and is_instance_valid(slot):
+			filled += 1
+	$GarrisonLabel.text = "%d/2" % filled

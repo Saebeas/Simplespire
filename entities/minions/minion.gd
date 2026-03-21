@@ -12,6 +12,8 @@ var boss_damage_multiplier: float = 1.0
 var role: int = 0
 var _is_garrisoned: bool = false
 var garrisoned_tower_index: int = -1
+var _garrison_home: Vector2 = Vector2.ZERO
+var _garrison_leash: float = 200.0
 
 const MELEE_RANGE: float = 40.0
 const ATTACK_INTERVAL: float = 1.0
@@ -59,13 +61,28 @@ func _physics_process(delta: float) -> void:
 	_current_target = _find_nearest_target()
 
 	if _is_garrisoned:
-		velocity.x = 0.0
-		if _current_target != null and _attack_timer >= ATTACK_INTERVAL:
-			var dist: float = abs(_current_target.global_position.x - global_position.x)
+		if _current_target != null:
+			var dist_to_target: float = abs(_current_target.global_position.x - global_position.x)
+			var dist_from_home: float = abs(global_position.x - _garrison_home.x)
 			var effective_range: float = attack_range if attack_range > 0.0 else MELEE_RANGE
-			if dist <= effective_range:
-				_attack_timer = 0.0
-				_do_attack()
+			var dir: float = sign(_current_target.global_position.x - global_position.x)
+
+			if dist_to_target <= effective_range:
+				velocity.x = 0.0
+				if _attack_timer >= ATTACK_INTERVAL:
+					_attack_timer = 0.0
+					_do_attack()
+			elif dist_from_home < _garrison_leash:
+				velocity.x = dir * move_speed
+			else:
+				velocity.x = 0.0
+		else:
+			var dist_home: float = global_position.x - _garrison_home.x
+			if abs(dist_home) > 5.0:
+				velocity.x = -sign(dist_home) * move_speed
+			else:
+				velocity.x = 0.0
+				global_position.x = _garrison_home.x
 	else:
 		if _current_target != null:
 			var dist: float = abs(_current_target.global_position.x - global_position.x)
@@ -132,6 +149,7 @@ func garrison(tower_idx: int, garrison_pos: Vector2) -> void:
 	_is_garrisoned = true
 	garrisoned_tower_index = tower_idx
 	global_position = garrison_pos
+	_garrison_home = garrison_pos
 	print("[Minion] %s garrisoned at tower %d" % [display_name, tower_idx + 1])
 
 
