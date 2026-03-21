@@ -16,6 +16,8 @@ const MIN_SEPARATION: float = 20.0
 var _attack_timer: float = 0.0
 var _current_target: Node = null
 
+var _first_capture: bool = true
+
 @onready var visual: ColorRect       = $Visual
 @onready var health_bar: ProgressBar = $HealthBar
 

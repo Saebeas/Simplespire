@@ -4,6 +4,9 @@ extends Node2D
 const BOSS_SCENE := preload("res://entities/tower_boss.tscn")
 const CRYSTAL_SCENE := preload("res://entities/crystal_node.tscn")
 
+var _first_capture: bool = true
+
+
 const ZONE_MAP: Dictionary = {
 	0: "t1_t2_zone",
 	1: "t1_t2_zone",
@@ -65,6 +68,11 @@ func _on_boss_died(idx: int, faction: int) -> void:
 	if faction == EventBus.Faction.ENEMY:
 		owner_faction = EventBus.Faction.PLAYER
 		EventBus.tower_captured.emit(tower_index)
+		if _first_capture:
+			_first_capture = false
+			var pack_cards: Array = _generate_pack()
+			EventBus.pack_opened.emit(pack_cards)
+			print("[Tower] 🎴 Card pack dropped from tower %d!" % (tower_index + 1))
 		print("[Tower] Tower %d captured by player!" % (tower_index + 1))
 	else:
 		owner_faction = EventBus.Faction.ENEMY
@@ -139,3 +147,12 @@ func _update_garrison_label() -> void:
 		if slot != null and is_instance_valid(slot):
 			filled += 1
 	$GarrisonLabel.text = "%d/2" % filled
+
+
+func _generate_pack() -> Array:
+	var pack: Array = []
+	var all_cards: Array = DataLoader.cards.values()
+	for i in range(3):
+		pack.append(all_cards[randi() % all_cards.size()])
+	print("[Tower] Pack contains: %s" % ", ".join(pack.map(func(c): return c.display_name)))
+	return pack

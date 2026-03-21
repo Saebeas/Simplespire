@@ -55,3 +55,11 @@ grow_vertical = 2
 text = "VICTORY!"
 label_settings = SubResource("LabelSettings_rbyyf")
 horizontal_alignment = 1
+
+[node name="WaveLabel" type="Label" parent="." unique_id=55150388]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 80.0
+offset_right = 70.0
+offset_bottom = 103.0
+text = "Wave: 0"

@@ -6,6 +6,7 @@ extends Control
 @onready var loot_label: Label  = $ResourcePanel/LootLabel
 @onready var miner_button: Button = $MinerButton
 @onready var result_label: Label = $ResultLabel
+@onready var wave_label: Label = $WaveLabel
 
 const MINER_SCENE := preload("res://entities/miner.tscn")
 
@@ -16,6 +17,8 @@ func _ready() -> void:
 	result_label.visible = false
 	EventBus.level_won.connect(_on_level_won)
 	EventBus.level_lost.connect(_on_level_lost)
+	wave_label.text = "Wave: 0"
+	EventBus.wave_spawned.connect(_on_wave_spawned)
 	
 	
 func _on_resources_changed(mined: int, loot: int) -> void:
@@ -69,3 +72,6 @@ func _on_level_lost() -> void:
 	result_label.text = "DEFEAT"
 	result_label.add_theme_color_override("font_color", Color("#ff4444"))
 	result_label.visible = true
+	
+func _on_wave_spawned(wave_number: int) -> void:
+	wave_label.text = "Wave: %d" % wave_number
