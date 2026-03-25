@@ -86,6 +86,12 @@ func _on_summon_confirmed(card: Resource, position: Vector2) -> void:
 		print("[CardManager] Not enough resources to play '%s'" % card.display_name)
 		_cancel_reticle()
 		return
+	if not GameManager.has_capacity_for(card.spawn_count):
+		print("[CardManager] Army at capacity! (%d/%d)" % \
+			[GameManager.get_minion_count(), GameManager.get_max_capacity()])
+		ResourceManager.add_mined(cost)   # refund
+		_cancel_reticle()
+		return
 	discard.append(card)
 	hand[slot] = null
 	_active_hand_index = -1

@@ -117,6 +117,7 @@ func take_damage(amount: float) -> void:
 
 func _die() -> void:
 	EventBus.unit_died.emit(self, null)
+	GameManager.unregister_minion()
 	print("[Minion] %s died" % display_name)
 	if _is_garrisoned:
 		EventBus.tower_garrison_changed.emit(garrisoned_tower_index, -1, null)

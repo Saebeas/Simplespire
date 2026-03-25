@@ -21,6 +21,7 @@ func _on_minion_played(card: CardResource, position: Vector2, mode: int) -> void
 		minion.global_position = spawn_pos
 		units_container.add_child(minion)
 		minion.setup(card)
+		GameManager.register_minion()
 
 		if mode == EventBus.PlayMode.GARRISON:
 			var tower: Node = _find_tower_at(position)

@@ -33,6 +33,11 @@ var wave_number: int = 0
 var towers_owned: int = 0          ## How many towers the player currently controls
 const TOTAL_TOWERS: int = 5
 
+# Minion Cap
+var _current_minion_count: int = 0
+var _base_capacity: int = 4
+var _capacity_per_tower: int = 2
+
 
 # =============================================================================
 # LIFECYCLE
@@ -124,14 +129,14 @@ func _on_level_lost() -> void:
 
 func _on_tower_captured(_tower_index: int) -> void:
 	towers_owned = min(towers_owned + 1, TOTAL_TOWERS)
-	print("[GameManager] Tower captured — towers owned: %d/%d" \
-		% [towers_owned, TOTAL_TOWERS])
+	print("[GameManager] Tower captured — towers: %d/%d | Army cap: %d" \
+		% [towers_owned, TOTAL_TOWERS, get_max_capacity()])
 
 
 func _on_tower_lost(_tower_index: int) -> void:
 	towers_owned = max(towers_owned - 1, 0)
-	print("[GameManager] Tower lost — towers owned: %d/%d" \
-		% [towers_owned, TOTAL_TOWERS])
+	print("[GameManager] Tower lost — towers: %d/%d | Army cap: %d" \
+		% [towers_owned, TOTAL_TOWERS, get_max_capacity()])
 
 
 func _on_wave_spawned(wave_num: int) -> void:
@@ -148,10 +153,33 @@ func reset_for_new_level() -> void:
 	current_state = LevelState.PLAYING
 	wave_number = 0
 	towers_owned = 0
+	_current_minion_count = 0
 	get_tree().paused = false
 	ResourceManager.reset_for_new_level()
 	print("[GameManager] Level reset — ready for new level")
 
+# =============================================================================
+# ARMY CAPACITY
+# =============================================================================
+
+func get_max_capacity() -> int:
+	return _base_capacity + (towers_owned * _capacity_per_tower)
+
+
+func get_minion_count() -> int:
+	return _current_minion_count
+
+
+func has_capacity_for(spawn_count: int) -> bool:
+	return (_current_minion_count + spawn_count) <= get_max_capacity()
+
+
+func register_minion() -> void:
+	_current_minion_count += 1
+
+
+func unregister_minion() -> void:
+	_current_minion_count = max(0, _current_minion_count - 1)
 
 # =============================================================================
 # DEBUG
