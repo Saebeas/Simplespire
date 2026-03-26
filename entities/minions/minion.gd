@@ -14,6 +14,7 @@ var _is_garrisoned: bool = false
 var garrisoned_tower_index: int = -1
 var _garrison_home: Vector2 = Vector2.ZERO
 var _garrison_leash: float = 200.0
+var _capacity_weight: int = 1
 
 const MELEE_RANGE: float = 40.0
 const ATTACK_INTERVAL: float = 1.0
@@ -39,6 +40,7 @@ func setup(card: CardResource) -> void:
 	attack_range          = card.attack_range
 	move_speed            = card.move_speed
 	boss_damage_multiplier = card.boss_damage_multiplier
+	_capacity_weight = card.capacity_weight
 	role                  = card.role
 	_apply_role_color()
 	health_bar.value = 1.0
@@ -117,7 +119,6 @@ func take_damage(amount: float) -> void:
 
 func _die() -> void:
 	EventBus.unit_died.emit(self, null)
-	GameManager.unregister_minion()
 	print("[Minion] %s died" % display_name)
 	if _is_garrisoned:
 		EventBus.tower_garrison_changed.emit(garrisoned_tower_index, -1, null)

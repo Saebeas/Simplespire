@@ -33,10 +33,13 @@ var wave_number: int = 0
 var towers_owned: int = 0          ## How many towers the player currently controls
 const TOTAL_TOWERS: int = 5
 
+var _used_capacity: int = 0
+var _base_capacity: int = 5
+var _capacity_per_tower: int = 1
+
 # Minion Cap
 var _current_minion_count: int = 0
-var _base_capacity: int = 4
-var _capacity_per_tower: int = 2
+
 
 
 # =============================================================================
@@ -55,6 +58,8 @@ func _ready() -> void:
 	# Listen for wave spawns to track wave number
 	EventBus.wave_spawned.connect(_on_wave_spawned)
 
+	#Debugging Capacity Weight Problem
+	print("[GameManager] _ready called, base_capacity: %d" % _base_capacity)
 
 # =============================================================================
 # STATE QUERIES
@@ -138,7 +143,6 @@ func _on_tower_lost(_tower_index: int) -> void:
 	print("[GameManager] Tower lost — towers: %d/%d | Army cap: %d" \
 		% [towers_owned, TOTAL_TOWERS, get_max_capacity()])
 
-
 func _on_wave_spawned(wave_num: int) -> void:
 	wave_number = wave_num
 	print("[GameManager] Wave %d began" % wave_number)
@@ -154,6 +158,7 @@ func reset_for_new_level() -> void:
 	wave_number = 0
 	towers_owned = 0
 	_current_minion_count = 0
+	_used_capacity = 0
 	get_tree().paused = false
 	ResourceManager.reset_for_new_level()
 	print("[GameManager] Level reset — ready for new level")
@@ -167,19 +172,20 @@ func get_max_capacity() -> int:
 
 
 func get_minion_count() -> int:
-	return _current_minion_count
+	return _used_capacity
 
 
 func has_capacity_for(spawn_count: int) -> bool:
-	return (_current_minion_count + spawn_count) <= get_max_capacity()
+	return (_used_capacity + spawn_count) <= get_max_capacity()
+
+func register_minion(capacity_weight: int) -> void:
+	_used_capacity += capacity_weight
 
 
-func register_minion() -> void:
-	_current_minion_count += 1
+func unregister_minion(capacity_weight: int) -> void:
+	_used_capacity = max(0, _used_capacity - capacity_weight)
 
 
-func unregister_minion() -> void:
-	_current_minion_count = max(0, _current_minion_count - 1)
 
 # =============================================================================
 # DEBUG

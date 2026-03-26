@@ -83,6 +83,8 @@ func _build_card_definitions() -> void:
 		card.attack_range   = float(d.get("attack_range", 0.0))
 		card.move_speed     = float(d.get("move_speed", 120.0))
 		card.spawn_count    = int(d.get("spawn_count", 1))
+		card.capacity_weight = int(d.get("capacity_weight", 1))
+		print("[DataLoader] %s capacity_weight: %d" % [card_id, card.capacity_weight])
 		card.boss_damage_multiplier = float(d.get("boss_damage_multiplier", 1.0))
 		cards[card_id] = card
 

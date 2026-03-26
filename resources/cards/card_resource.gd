@@ -60,6 +60,9 @@ enum Rarity {
 @export var spawn_count: int = 1
 ## How many units this card spawns. 1 = normal, 3+ = swarm.
 
+@export var capacity_weight: int = 1
+#How much army capacity the card takes up
+
 @export var boss_damage_multiplier: float = 1.0
 ## Damage dealt to bosses is multiplied by this. Siege cards use 2.0.
 

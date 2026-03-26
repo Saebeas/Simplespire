@@ -16,11 +16,11 @@
 		"hp": 1000
 	},
 	"crystal_nodes": {
-		"base_zone":    { "yield": 1, "pack_chance": 0.01  },
-		"t1_t2_zone":   { "yield": 2, "pack_chance": 0.025 },
-		"t3_zone":      { "yield": 3, "pack_chance": 0.04  },
-		"t4_t5_zone":   { "yield": 4, "pack_chance": 0.10  },
-		"enemy_zone":   { "yield": 5, "pack_chance": 0.10  }
+		"base_zone": { "yield": 1, "pack_chance": 0.01 },
+		"t1_t2_zone": { "yield": 2, "pack_chance": 0.025 },
+		"t3_zone": { "yield": 3, "pack_chance": 0.04 },
+		"t4_t5_zone": { "yield": 4, "pack_chance": 0.10 },
+		"enemy_zone": { "yield": 5, "pack_chance": 0.10 }
 	},
 	"basic_miner": {
 		"cost": 8,
@@ -65,8 +65,8 @@
 		"hand_size": 4
 	},
 	"army_capacity": {
-		"base": 4,
-		"per_tower": 2
+		"base": 5,
+		"per_tower": 1
 	},
 	"card_definitions": {
 		"crystal_golem": {
@@ -79,7 +79,8 @@
 			"attack_range": 0.0,
 			"move_speed": 120.0,
 			"spawn_count": 1,
-			"boss_damage_multiplier": 1.0
+			"boss_damage_multiplier": 1.0,
+			"capacity_weight": 3
 		},
 		"arcane_soldier": {
 			"display_name": "Arcane Soldier",
@@ -91,7 +92,8 @@
 			"attack_range": 0.0,
 			"move_speed": 120.0,
 			"spawn_count": 1,
-			"boss_damage_multiplier": 1.0
+			"boss_damage_multiplier": 1.0,
+			"capacity_weight": 2
 		},
 		"shard_archer": {
 			"display_name": "Shard Archer",
@@ -103,7 +105,8 @@
 			"attack_range": 150.0,
 			"move_speed": 120.0,
 			"spawn_count": 1,
-			"boss_damage_multiplier": 1.0
+			"boss_damage_multiplier": 1.0,
+			"capacity_weight": 2
 		},
 		"wisp_cluster": {
 			"display_name": "Wisp Cluster",
@@ -115,7 +118,8 @@
 			"attack_range": 0.0,
 			"move_speed": 160.0,
 			"spawn_count": 3,
-			"boss_damage_multiplier": 1.0
+			"boss_damage_multiplier": 1.0,
+			"capacity_weight": 1
 		},
 		"blade_phantom": {
 			"display_name": "Blade Phantom",
@@ -127,7 +131,8 @@
 			"attack_range": 0.0,
 			"move_speed": 120.0,
 			"spawn_count": 1,
-			"boss_damage_multiplier": 1.0
+			"boss_damage_multiplier": 1.0,
+			"capacity_weight": 1
 		},
 		"rune_breaker": {
 			"display_name": "Rune Breaker",
@@ -139,15 +144,16 @@
 			"attack_range": 0.0,
 			"move_speed": 80.0,
 			"spawn_count": 1,
-			"boss_damage_multiplier": 2.0
+			"boss_damage_multiplier": 2.0,
+			"capacity_weight": 2
 		}
 	},
 	"starter_deck": [
-		{ "id": "crystal_golem",  "count": 3 },
+		{ "id": "crystal_golem", "count": 3 },
 		{ "id": "arcane_soldier", "count": 3 },
-		{ "id": "shard_archer",   "count": 3 },
-		{ "id": "wisp_cluster",   "count": 3 },
-		{ "id": "blade_phantom",  "count": 2 },
-		{ "id": "rune_breaker",   "count": 1 }
+		{ "id": "shard_archer", "count": 3 },
+		{ "id": "wisp_cluster", "count": 3 },
+		{ "id": "blade_phantom", "count": 2 },
+		{ "id": "rune_breaker", "count": 1 }
 	]
 }

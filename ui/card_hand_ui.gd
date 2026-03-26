@@ -22,6 +22,8 @@ func _ready() -> void:
 	EventBus.summon_reticle_activated.connect(_on_reticle_activated)
 	EventBus.summon_reticle_cancelled.connect(_on_reticle_cancelled)
 	EventBus.insufficient_resources.connect(_on_insufficient_resources)
+	EventBus.unit_died.connect(func(_e, _k): _refresh_capacity())
+
 
 func _update_counters() -> void:
 	var total: int = CardManager.deck.size() + CardManager.discard.size() + CardManager.get_hand().reduce(func(count, card): return count + (1 if card != null else 0), 0)
@@ -40,6 +42,16 @@ func _refresh_all() -> void:
 		_slots[i].set_active(false)
 	_update_counters()
 
+func _refresh_capacity() -> void:
+	var hand := CardManager.get_hand()
+	for i in range(_slots.size()):
+		var card = hand[i]
+		if card != null:
+			_slots[i].set_capacity_blocked(
+				not GameManager.has_capacity_for(card.capacity_weight)
+			)
+
+
 func _on_card_drawn(_card: Resource, slot: int) -> void:
 	if slot >= _slots.size():
 		return
@@ -54,6 +66,7 @@ func _on_card_played(_card: Resource, slot: int, _mode: int) -> void:
 	_slots[slot].set_card(null)
 	_slots[slot].set_active(false)
 	_update_counters()
+	_refresh_capacity()
 
 
 func _on_reticle_activated(hand_index: int) -> void:

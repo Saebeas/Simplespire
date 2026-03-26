@@ -75,3 +75,14 @@ func _set_bg_color(color: Color) -> void:
 	style.border_width_bottom = 2
 	style.border_color = Color("#6633cc")
 	add_theme_stylebox_override("panel", style)
+	
+
+func set_capacity_blocked(blocked: bool) -> void:
+	if _card == null:
+		return
+	if blocked:
+		name_label.text = _card.display_name + " ✕"
+		cost_label.text = "No room!"
+	else:
+		name_label.text = _card.display_name
+		cost_label.text = "Cost: %d" % _card.cost
