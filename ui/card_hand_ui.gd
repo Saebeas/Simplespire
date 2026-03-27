@@ -58,6 +58,7 @@ func _on_card_drawn(_card: Resource, slot: int) -> void:
 	_slots[slot].set_card(_card)
 	_slots[slot].set_active(false)
 	_update_counters()
+	_refresh_capacity()
 
 
 func _on_card_played(_card: Resource, slot: int, _mode: int) -> void:
@@ -70,6 +71,7 @@ func _on_card_played(_card: Resource, slot: int, _mode: int) -> void:
 
 
 func _on_reticle_activated(hand_index: int) -> void:
+	_refresh_capacity()
 	for i in range(_slots.size()):
 		_slots[i].set_active(i == hand_index)
 

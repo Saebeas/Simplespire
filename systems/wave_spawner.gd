@@ -66,7 +66,7 @@ func _process(delta: float) -> void:
 
 func _queue_wave(wave_num: int) -> void:
 	var count: int = mini(_base_count + int(wave_num / 3), _max_creeps)
-	var scale: float = 1.0 + _scaling_rate * wave_num
+	var scale: float = pow(1.0 + _scaling_rate, wave_num)
 	var hp: float = _base_hp * scale
 	var dps: float = _base_dps * scale
 	var speed: float = _base_speed
