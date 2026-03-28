@@ -6,12 +6,17 @@ const SWARM_SPREAD: float = 20.0
 
 var _capacity_groups: Array = []   # [{ "card": CardResource, "members": [Node, ...] }]
 
+signal capacity_groups_changed(groups: Array)
+
+@onready var _ready_done: bool = false
+
 @onready var units_container: Node2D = get_tree().get_first_node_in_group("units_container")
 
 
 func _ready() -> void:
 	EventBus.minion_played.connect(_on_minion_played)
 	EventBus.unit_died.connect(_on_unit_died)
+	add_to_group("minion_spawner")
 
 
 func _on_minion_played(card: CardResource, position: Vector2, mode: int) -> void:
@@ -35,6 +40,7 @@ func _on_minion_played(card: CardResource, position: Vector2, mode: int) -> void
 					minion.garrison(tower.tower_index, position)
 
 	_capacity_groups.append({"card": card, "members": spawned})
+	capacity_groups_changed.emit(_get_group_data())
 
 
 func _on_unit_died(entity: Node, _killer: Node) -> void:
@@ -48,6 +54,7 @@ func _on_unit_died(entity: Node, _killer: Node) -> void:
 			if group["members"].is_empty():
 				GameManager.unregister_minion(group["card"].capacity_weight)
 				_capacity_groups.remove_at(i)
+			capacity_groups_changed.emit(_get_group_data())
 			return
 
 
@@ -56,3 +63,12 @@ func _find_tower_at(pos: Vector2) -> Node:
 		if abs(tower.global_position.x - pos.x) < 100.0:
 			return tower
 	return null
+
+func _get_group_data() -> Array:
+	var data: Array = []
+	for group in _capacity_groups:
+		data.append({
+			"card_id": group["card"].id,
+			"capacity_weight": group["card"].capacity_weight
+		})
+	return data
